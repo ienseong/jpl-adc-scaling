@@ -1,0 +1,10 @@
+# lint artifacts
+scripts/stow/jflint/share/jflint/rules/hds_user
+scripts/stow/jflint/share/jflint/rules/dc_user/**
+
+# vim swap
+*.swp
+
+# jfsim artificats
+verif/results
+verif/obj

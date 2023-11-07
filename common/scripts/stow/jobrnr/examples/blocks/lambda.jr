@@ -1,0 +1,13 @@
+function = ->(arg) do
+  "hello #{arg}"
+end
+
+job :run do
+  execute do
+    "echo #{function.call("world")}"
+  end
+end
+
+jobrnr_options.output_directory = 'results'
+
+# vim: ft=ruby sw=2

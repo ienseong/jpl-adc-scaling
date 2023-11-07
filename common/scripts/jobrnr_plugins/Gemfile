@@ -1,0 +1,11 @@
+source 'https://rubygems.org'
+
+# Need to tell gem/bunlder where to find sqlite3
+# $ gem install sqlite3 -- --with-sqlite3-include=/proj/fpga/usr/include --with-sqlite3-lib=/proj/fpga/usr/lib
+gem 'sqlite3'
+gem 'rom-repository'
+gem 'rom-sql'
+
+group :development do
+  gem 'yard'
+end

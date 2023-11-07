@@ -1,0 +1,80 @@
+#!/usr/bin/env ruby
+#
+# NAME
+#
+#     flpp - file list preprocessor
+#
+# SYNOPSIS
+#
+#     flpp [options] <file(s)>
+#
+# DESCRIPTION
+#
+#     Preprocess file lists (*.f) to support #includes and #defines.
+#
+# OPTIONS
+#
+#     -D<define>
+#         Defines to pass to the C preprocessor.  Multiple allowed.
+#
+# AUTHOR
+#
+#     Rob Donnelly <robert.donnelly@jpl.nasa.gov>
+#
+# CREATED
+#
+#     2016-07-12
+
+require 'set'
+require 'tempfile'
+
+SCRIPT_NAME = File.basename($0)
+
+COLOR_RED = "\e[91m"
+COLOR_END = "\e[0m"
+
+def run(command)
+  status = system(command)
+
+  unless status
+    $stderr.puts "#{COLOR_RED}ERROR:#{COLOR_END} #{SCRIPT_NAME}: command '#{command}' failed"
+    exit 1
+  end
+end
+
+def main(argv)
+  defines, files = { true => [], false => [] }.merge(argv.group_by { |arg| arg.start_with?("-D") }).values
+
+  cppp_output = Tempfile.new("#{SCRIPT_NAME}-cppp-")
+  cpp_output = Tempfile.new("#{SCRIPT_NAME}-cpp-")
+  begin
+    # Expand #includes with environment variables (e.g. '#include
+    # $SBOX/path/file.f')
+    run("cppp #{files.join(' ')} > #{cppp_output.path}")
+
+    # Expand macros (e.g. #define)
+    run("cpp #{defines.join(' ')} < #{cppp_output.path} > #{cpp_output.path}")
+
+    postprocess_and_print(cpp_output.path)
+  ensure
+    cppp_output.close!
+    cpp_output.close!
+  end
+end
+
+def postprocess_and_print(file)
+  unique_lines = Set.new
+
+  File.open(file).each_line do |line|
+    line = line.strip
+
+    # Print unique lines only
+    #
+    # to prevent (vlog-2275) 'module already exists' warnings
+    if unique_lines.add?(line)
+      puts line
+    end
+  end
+end
+
+main(ARGV)

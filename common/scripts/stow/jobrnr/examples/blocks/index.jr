@@ -1,0 +1,6 @@
+import 'def', 'def.jr'
+import 'lambda', 'lambda.jr'
+
+jobrnr_options.output_directory = 'results'
+
+# vim: ft=ruby sw=2

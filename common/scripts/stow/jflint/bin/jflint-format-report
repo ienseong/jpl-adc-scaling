@@ -1,0 +1,122 @@
+#!/usr/bin/env ruby
+#
+# NAME
+#
+#     jflint-format-report
+#
+# SYNOPSIS
+#
+#     jflint-format-report <violations.csv> [<checked_filelist.csv>]
+#
+# DESCRIPTION
+#
+#     Converters a Mentor HDS Lint Report from CSV format to YAML format to
+#     increase readability.
+
+require 'csv'
+require 'yaml'
+
+require_relative '../lib/jflint'
+
+class ViolationReport
+  SEVERITY_ORDER = {
+    'SYNTAX' => 0,
+    'SYNTHESIS' => 1,
+    'ERROR' => 2,
+    'WARNING' => 3,
+    'NOTE' => 4,
+  }
+
+  def initialize(path)
+    raw_data = from_csv(path)
+    @data = transform(raw_data)
+  end
+
+  def from_csv(path)
+    # Remove tabs from all fields
+    code_converter = lambda do |field, field_info|
+      if field_info.header == 'code_snippet'
+        field.gsub(/\t/, ' ' * 4)
+      else
+        field
+      end
+    end
+
+    # Format headers
+    header_converter = lambda do |field|
+      field.downcase.gsub(/\s/, '_')
+    end
+
+    options = {
+      headers: true,
+      header_converters: header_converter,
+      converters: [:numeric, code_converter],
+    }
+
+    CSV.read(path, options)
+  end
+
+  def transform(data)
+    data.map do |entry|
+      filename, linenumber = [entry['filename'], entry['line_number']]
+
+      # Select, format, and order fields
+      entry = {
+        'rule' => get_rule(entry['rule_name']),
+        'location' => [sbox_relative(filename), ':', linenumber].join,
+        'severity' => get_severity(entry['rule_severity']),
+        'message' => entry['message'],
+        'hint' => entry['hint'],
+        'snippet' => entry['code_snippet'],
+      }
+    end.sort_by do |entry|
+      filename, linenumber = entry['location'].split(/:/)
+      [filename, SEVERITY_ORDER[entry['severity']], linenumber.to_i, entry['rule']]
+    end
+  end
+
+  def get_rule(rule_name)
+    rule = rule_name.scan(/\((.*?)\)/).join(' / ')
+
+    if rule.empty?
+      rule_name
+    else
+      rule
+    end
+  end
+
+  def get_severity(rule_severity)
+    case rule_severity
+    when 'Syntax Error'
+      'SYNTAX'
+    when 'Synthesis Error'
+      'SYNTHESIS'
+    else
+      rule_severity.upcase
+    end
+  end
+
+  def to_yaml
+    @data.to_yaml({ line_width: 80 })
+      .gsub(/^- /, "\n- ")    # separate entries with blank line
+  end
+
+  def sbox_relative(path)
+    path.gsub(/#{ENV['SBOX']}\//, '')
+  end
+end
+
+def main(argv)
+  raise JF::Error, "One argument required" unless argv.size == 1
+  violation_report_path = argv.first
+  raise JF::Error, "Input file does not exist (#{violation_report_path})" unless File.exists?(violation_report_path)
+
+  report = ViolationReport.new(violation_report_path)
+  puts report.to_yaml
+end
+
+begin
+  main(ARGV)
+rescue JF::Error => e
+  abort "ERROR: jflint-format-report: #{e.message}"
+end

@@ -1,0 +1,15 @@
+#include "$J5_COMMON/verif/lib/jf.f"
+
++define+ASSERT_ON
+
++incdir+$<%= unit_identifier.upcase %>/verif/models
++incdir+$<%= unit_identifier.upcase %>/verif/testbench
++incdir+$<%= unit_identifier.upcase %>/verif/tests
+
+#ifdef GATE
+    <%= unit_identifier.upcase %>_NETLIST
+#else
+    #include "$<%= unit_identifier.upcase %>/rtl/rtl.f"
+#endif
+
+$<%= unit_identifier.upcase %>/verif/testbench/tb.sv

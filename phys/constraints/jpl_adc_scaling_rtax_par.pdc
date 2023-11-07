@@ -1,0 +1,523 @@
+# REV 10: 02/14/08 Copied pin assignments from the first Flight burn of MSL, then changed the pinout of the RT vs 1553 RST 
+# REV 9: 02/14/08 Copied RAM placement from Nan's file, Added Reg I/O to PCI signals but DEVSEL and GNT like Nan's file 
+# REV 8: 
+# REV 7: 11/06/07 Removed HEALTH_OR and CSRDEFSTEST_OR . A. Khashaki
+# REV 6: 11/06/07 Cahnged BC signals to LVTTL . A. Khashaki
+# REV 5: 09/18/07 Added two pins for HEALTH & HEALTH_OR and two PINS FOR CSRDEFSTEST and CSRDEFSTEST_OR and rearranged the SPARE IO's. A. Khashaki
+# REV 4: 08/08/07 Set BOARD ID for upscope design. A. Khashaki
+# REV 3: 05/09/07 Set pull down for CRC_BANKn and pull up for CRC_SET/RST signals to make them inactive when not driven. A. Khashaki
+# Actel Physical design constraints file
+# Version: 6.1 SP1 6.1.1.108
+# Design Name: MTIF_CHIP 
+# Input Netlist Format: edif 
+# Family: Axcelerator , Die: RTAX2000 , Package: fg624 
+# Date generated: Sun Oct 01 12:06:13 2005 
+
+# NOTE the following unused IOs
+# inputs:  ETH_ARDY (N16), 
+# ouputs:  ETH_A00 ()
+
+#
+# IO banks setting
+#
+
+set_iobank Bank0 -vcci 3.30
+set_iobank Bank1 -vcci 3.30
+set_iobank Bank2 -vcci 3.30
+set_iobank Bank3 -vcci 3.30
+set_iobank Bank4 -vcci 3.30
+set_iobank Bank5 -vcci 3.30
+set_iobank Bank6 -vcci 3.30
+set_iobank Bank7 -vcci 3.30
+
+#
+# I/O constraints
+#
+
+set_io BC_RA_ONE -iostd LVTTL -REGISTER No -RES_PULL Up -pinname A22 -fixed yes
+set_io BC_RA_ZERO -iostd LVTTL -REGISTER No -RES_PULL Up -pinname A21 -fixed yes
+set_io BC_RB_ONE -iostd LVTTL -REGISTER No -RES_PULL Up -pinname D16 -fixed yes
+set_io BC_RB_ZERO -iostd LVTTL -REGISTER No -RES_PULL Up -pinname D15 -fixed yes
+
+set_io BC_TA_ONE -iostd LVTTL -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname A20 -fixed yes
+set_io BC_TA_ZERO -iostd LVTTL -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname A19 -fixed yes
+set_io BC_TB_ONE -iostd LVTTL -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname G16 -fixed yes
+set_io BC_TB_ZERO -iostd LVTTL -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname H16 -fixed yes
+
+set_io BC_A_ENAn -iostd LVTTL -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -RES_PULL Down -pinname A17 -fixed yes
+set_io BC_B_ENAn -iostd LVTTL -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -RES_PULL Down -pinname E15 -fixed yes
+
+set_io CRC0_PULSE -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Up -OUT_LOAD 35 -pinname G9 -fixed yes
+set_io CRC1 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname K22 -fixed yes
+set_io CRC2 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname F25 -fixed yes
+set_io CRC3 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname L22 -fixed yes
+set_io CRC4 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname G25 -fixed yes
+set_io CRC5 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname L20 -fixed yes
+set_io CRC6 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname K24 -fixed yes
+set_io CRC7 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname L21 -fixed yes
+set_io CRC8 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname L24 -fixed yes
+set_io CRC9 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname M24 -fixed yes
+set_io CRC10 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname K25 -fixed yes
+set_io CRC11 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname N24 -fixed yes
+set_io CRC12 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname L25 -fixed yes
+set_io CRC13 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname M22 -fixed yes
+set_io CRC14 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname M23 -fixed yes
+set_io CRC15 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname N22 -fixed yes
+set_io CRC16 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname N23 -fixed yes
+set_io CRC17 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname P17 -fixed yes
+set_io CRC18 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname M25 -fixed yes
+set_io CRC19 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname P18 -fixed yes
+set_io CRC20 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname N25 -fixed yes
+set_io CRC21 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname Y19 -fixed yes
+set_io CRC22 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname AB18 -fixed yes
+set_io CRC23 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname Y18 -fixed yes
+set_io CRC_BANKn0 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Up -OUT_LOAD 35 -pinname E2 -fixed yes
+set_io CRC_BANKn1 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Up -OUT_LOAD 35 -pinname H3 -fixed yes
+set_io CRC_BANKn2 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Up -OUT_LOAD 35 -pinname F2 -fixed yes
+set_io CRC_BANKn3 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Up -OUT_LOAD 35 -pinname H2 -fixed yes
+set_io CRC_MASK_POR0 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W6 -fixed yes
+set_io CRC_MASK_POR1 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname Y7 -fixed yes
+set_io CRC_MASK_POR2 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W7 -fixed yes
+set_io CRC_MASK_POR3 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname AB8 -fixed yes
+set_io CRC_MASK_POR4 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname Y9 -fixed yes
+set_io CRC_MASK_POR5 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W8 -fixed yes
+set_io CRC_MASK_POR6 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W9 -fixed yes
+set_io CRC_MASK_POR7 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname V10 -fixed yes
+set_io CRC_RB32 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname D1 -fixed yes
+set_io CRC_RB33 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname K7 -fixed yes
+set_io CRC_RB34 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname E1 -fixed yes
+set_io CRC_RB35 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname K6 -fixed yes
+set_io CRC_RB36 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname F1 -fixed yes
+set_io CRC_RB37 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname K4 -fixed yes
+set_io CRC_RB38 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname L4 -fixed yes
+set_io CRC_RB39 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname K2 -fixed yes
+set_io CRC_RB40 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname L6 -fixed yes
+set_io CRC_RB41 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname L2 -fixed yes
+set_io CRC_RB42 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname L5 -fixed yes
+set_io CRC_RB43 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname P9 -fixed yes
+set_io CRC_RB44 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname N6 -fixed yes
+set_io CRC_RB45 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname N3 -fixed yes
+set_io CRC_RB46 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname P3 -fixed yes
+set_io CRC_RB47 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname P8 -fixed yes
+set_io CRC_RB48 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname M1 -fixed yes
+set_io CRC_RB49 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname P7 -fixed yes
+set_io CRC_RB50 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname N1 -fixed yes
+set_io CRC_RB51 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname R7 -fixed yes
+set_io CRC_RB52 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname P1 -fixed yes
+set_io CRC_RB53 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname P6 -fixed yes
+set_io CRC_RB54 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname R1 -fixed yes
+set_io CRC_RB55 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname P5 -fixed yes
+set_io CRC_RB56 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname AA1 -fixed yes
+set_io CRC_RB57 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname R5 -fixed yes
+set_io CRC_RB58 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname AB1 -fixed yes
+set_io CRC_RB59 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname R4 -fixed yes
+set_io CRC_RB60 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname R3 -fixed yes
+set_io CRC_RB61 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname T4 -fixed yes
+set_io CRC_RB62 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname V2 -fixed yes
+set_io CRC_RB63 -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname Y6 -fixed yes
+set_io CRC_RST0 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname K1 -fixed yes
+set_io CRC_RST1 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname N10 -fixed yes
+set_io CRC_RST2 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname L1 -fixed yes
+set_io CRC_RST3 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname N9 -fixed yes
+set_io CRC_RST4 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname M2 -fixed yes
+set_io CRC_RST5 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname N4 -fixed yes
+set_io CRC_RST6 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname N2 -fixed yes
+set_io CRC_RST7 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname P4 -fixed yes
+set_io CRC_SET0 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname T1 -fixed yes
+set_io CRC_SET1 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname P2 -fixed yes
+set_io CRC_SET2 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname U1 -fixed yes
+set_io CRC_SET3 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname R2 -fixed yes
+set_io CRC_SET4 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname W1 -fixed yes
+set_io CRC_SET5 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname R8 -fixed yes
+set_io CRC_SET6 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname Y1 -fixed yes
+set_io CRC_SET7 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -OUT_LOAD 35 -pinname T8 -fixed yes
+set_io CRC_VOL_POR0 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname AB10 -fixed yes
+set_io CRC_VOL_POR1 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname AB11 -fixed yes
+set_io CRC_VOL_POR2 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W10 -fixed yes
+set_io CRC_VOL_POR3 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname AA11 -fixed yes
+
+set_io EDAC_PING_ENAn -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W4 -fixed yes
+set_io EDAC_PONG_ENAn -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname AA2 -fixed yes
+set_io EDAC_VECTOR_ENAn -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname V3 -fixed yes
+set_io EDAC_BC_ENAn -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname F15 -fixed yes
+set_io DEFSTEST -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname G11 -fixed yes
+set_io GNDUEn -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname K13 -fixed yes
+set_io LONGn_SHORT -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname AB2 -fixed yes
+set_io SECDEDn_NECTED -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W3 -fixed yes
+set_io TEST_MODE_ENA -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname V6 -fixed yes
+
+set_io D_1553_RSTn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname A6 -fixed yes
+set_io TEST_RSTn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname A7 -fixed yes
+set_io GSE_RSTn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname G8 -fixed yes
+set_io HCD_RSTn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname B7 -fixed yes
+set_io PORn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname D9 -fixed yes
+set_io RT_RSTn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname D10 -fixed yes
+set_io SC_CLK -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname B13 -fixed yes
+set_io SFC_RSTn -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname H15 -fixed yes
+
+#set_io ETH_A00 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 
+set_io ETH_A01 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname D17 -fixed yes
+set_io ETH_A02 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname C17 -fixed yes
+set_io ETH_A03 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname B17 -fixed yes
+set_io ETH_A04 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname D18 -fixed yes
+set_io ETH_A05 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname C18 -fixed yes
+set_io ETH_A06 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname B18 -fixed yes
+set_io ETH_A07 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname D19 -fixed yes
+set_io ETH_A08 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname C19 -fixed yes
+set_io ETH_A09 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname B19 -fixed yes
+set_io ETH_A10 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname D20 -fixed yes
+set_io ETH_A11 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname C20 -fixed yes
+set_io ETH_A12 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname B20 -fixed yes
+set_io ETH_A13 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname C21 -fixed yes
+set_io ETH_A14 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname B21 -fixed yes
+set_io ETH_A15 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname B22 -fixed yes
+set_io ETH_AEN -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname C14 -fixed yes
+# ETH_ARDY is currently unused but reserved
+# set_io ETH_ARDY -iostd LVTTL -REGISTER No -RES_PULL None -IN_DELAY Off -pinname N16 -fixed yes
+set_io ETH_D00 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname N17 -fixed yes
+set_io ETH_D01 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname M17 -fixed yes
+set_io ETH_D02 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname M18 -fixed yes
+set_io ETH_D03 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname M19 -fixed yes
+set_io ETH_D04 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname L18 -fixed yes
+set_io ETH_D05 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname L19 -fixed yes
+set_io ETH_D06 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname L23 -fixed yes
+set_io ETH_D07 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname K18 -fixed yes
+set_io ETH_D08 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname K19 -fixed yes
+set_io ETH_D09 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname K20 -fixed yes
+set_io ETH_D10 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname J18 -fixed yes
+set_io ETH_D11 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname J19 -fixed yes
+set_io ETH_D12 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname J20 -fixed yes
+set_io ETH_D13 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname J21 -fixed yes
+set_io ETH_D14 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname J22 -fixed yes
+set_io ETH_D15 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname J23 -fixed yes
+set_io ETH_D16 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname J24 -fixed yes
+set_io ETH_D17 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname H18 -fixed yes
+set_io ETH_D18 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname H19 -fixed yes
+set_io ETH_D19 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname H20 -fixed yes
+set_io ETH_D20 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname H22 -fixed yes
+set_io ETH_D21 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname H23 -fixed yes
+set_io ETH_D22 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname H24 -fixed yes
+set_io ETH_D23 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname G19 -fixed yes
+set_io ETH_D24 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname G20 -fixed yes
+set_io ETH_D25 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname G21 -fixed yes
+set_io ETH_D26 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname G22 -fixed yes
+set_io ETH_D27 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname G23 -fixed yes
+set_io ETH_D28 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname G24 -fixed yes
+set_io ETH_D29 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname H17 -fixed yes
+set_io ETH_D30 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname G17 -fixed yes
+set_io ETH_D31 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname G18 -fixed yes
+set_io ETH_DIR -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname D24 -fixed yes
+set_io ETH_INTR0 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname F20 -fixed yes
+set_io ETH_LCLK -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname F23 -fixed yes
+set_io ETH_nADS -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname D14 -fixed yes
+set_io ETH_nBE0 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname H13 -fixed yes
+set_io ETH_nBE1 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname F16 -fixed yes
+set_io ETH_nBE2 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname F17 -fixed yes
+set_io ETH_nBE3 -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname F18 -fixed yes
+set_io ETH_nCYCLE -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname A16 -fixed yes
+set_io ETH_nDATACS -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname E17 -fixed yes
+set_io ETH_nLDEV -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname F19 -fixed yes
+set_io ETH_nRD -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname E24 -fixed yes
+set_io ETH_nRDYRTN -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname B16 -fixed yes
+set_io ETH_nSRDY -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname F24 -fixed yes
+set_io ETH_nVLBUS -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname A15 -fixed yes
+set_io ETH_nWR -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname E18 -fixed yes
+set_io ETH_RESET -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname E25 -fixed yes
+set_io ETH_W_nR -iostd LVTTL -REGISTER No -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname D25 -fixed yes
+
+set_io CSRFDU_SPARE -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname U2 -fixed yes
+set_io CSRHEALTHBEAT -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname T7 -fixed yes
+set_io CSRONLINEn0 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname R6 -fixed yes
+set_io CSRONLINEn1 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname U7 -fixed yes
+set_io CSRONLINEn2 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname T6 -fixed yes
+set_io CSRPRIMEn0 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname W2 -fixed yes
+set_io CSRPRIMEn1 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname T2 -fixed yes
+set_io CSRPRIMEn2 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname Y2 -fixed yes
+set_io LBFDU_SPARE -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname AA6 -fixed yes
+set_io LBHEALTHBEAT -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname Y5 -fixed yes
+set_io LBONLINEn0 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname U4 -fixed yes
+set_io LBONLINEn1 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname W5 -fixed yes
+set_io LBONLINEn2 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname V4 -fixed yes
+set_io LBPRIMEn0 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname Y3 -fixed yes
+set_io LBPRIMEn1 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname AA3 -fixed yes
+set_io LBPRIMEn2 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname AB6 -fixed yes
+set_io HEALTHBEAT -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname V8 -fixed yes
+set_io ONLINEn0 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname U6 -fixed yes
+set_io ONLINEn1 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname U3 -fixed yes
+set_io ONLINEn2 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname U5 -fixed yes
+set_io PRIMEn0 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname AA8 -fixed yes
+set_io PRIMEn1 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname V7 -fixed yes
+set_io PRIMEn2 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname Y8 -fixed yes
+set_io FDU_SPARE -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname U8 -fixed yes
+set_io RST_PDGN -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname C7 -fixed yes
+set_io CSRDEFSTEST -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname M9 -fixed yes
+set_io HEALTH -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname M21 -fixed yes
+
+set_io subRTIn -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname V9 -fixed yes
+set_io RTIn -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname F9 -fixed yes
+set_io XRTIn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname F10 -fixed yes
+set_io DTSTARTn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname E9 -fixed yes
+set_io DEADPn -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname D8 -fixed yes
+set_io ONEMHZ -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname B8 -fixed yes
+
+set_io C_BEn0 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC20 -fixed yes
+set_io C_BEn1 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD16 -fixed yes
+set_io C_BEn2 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC13 -fixed yes
+set_io C_BEn3 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC9 -fixed yes
+set_io DEVSELn -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE14 -fixed yes
+set_io FRAMEn -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname Y13 -fixed yes
+set_io GNTn -iostd PCI -REGISTER No -pinname AA9 -fixed yes
+set_io IDSEL -iostd PCI -REGISTER No -pinname AD8 -fixed yes
+set_io INTAn -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE4 -fixed yes
+set_io IRDYn -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD12 -fixed yes
+set_io PCI_AD00 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE22 -fixed yes
+set_io PCI_AD01 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC19 -fixed yes
+set_io PCI_AD02 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE20 -fixed yes
+set_io PCI_AD03 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD21 -fixed yes
+set_io PCI_AD04 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD22 -fixed yes
+set_io PCI_AD05 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD20 -fixed yes
+set_io PCI_AD06 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD19 -fixed yes
+set_io PCI_AD07 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE21 -fixed yes
+set_io PCI_AD08 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC21 -fixed yes
+set_io PCI_AD09 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC18 -fixed yes
+set_io PCI_AD10 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE19 -fixed yes
+set_io PCI_AD11 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC17 -fixed yes
+set_io PCI_AD12 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD18 -fixed yes
+set_io PCI_AD13 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD17 -fixed yes
+set_io PCI_AD14 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC15 -fixed yes
+set_io PCI_AD15 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE16 -fixed yes
+set_io PCI_AD16 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC12 -fixed yes
+set_io PCI_AD17 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD10 -fixed yes
+set_io PCI_AD18 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD9 -fixed yes
+set_io PCI_AD19 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE11 -fixed yes
+set_io PCI_AD20 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE10 -fixed yes
+set_io PCI_AD21 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC8 -fixed yes
+set_io PCI_AD22 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC7 -fixed yes
+set_io PCI_AD23 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE9 -fixed yes
+set_io PCI_AD24 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC6 -fixed yes
+set_io PCI_AD25 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD7 -fixed yes
+set_io PCI_AD26 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD6 -fixed yes
+set_io PCI_AD27 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC5 -fixed yes
+set_io PCI_AD28 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE6 -fixed yes
+set_io PCI_AD29 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE5 -fixed yes
+set_io PCI_AD30 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE7 -fixed yes
+set_io PCI_AD31 -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD5 -fixed yes
+set_io PCI_PAR -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AE15 -fixed yes
+set_io PERRn -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD15 -fixed yes
+set_io REQn -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AB7 -fixed yes
+set_io SERRn -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AC14 -fixed yes
+set_io STOPn -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD14 -fixed yes
+set_io TRDYn -iostd PCI -REGISTER No -OUT_DRIVE 16 -OUT_LOAD 10 -pinname AD13 -fixed yes
+set_io SYSCLK -iostd PCI -REGISTER No -pinname G12 -fixed yes
+set_io SYSRSTn -iostd PCI -REGISTER No -pinname W15 -fixed yes
+
+set_io A_CMD_CLK -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname M8 -fixed yes
+set_io A_CMD_DATA -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname M7 -fixed yes
+set_io A_CMD_LOCKn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname L7 -fixed yes
+set_io A_DL_CLK -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname D2 -fixed yes
+set_io A_DL_DATA -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname K8 -fixed yes
+set_io A_DL_ENA -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname F3 -fixed yes
+set_io B_CMD_CLK -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname J2 -fixed yes
+set_io B_CMD_DATA -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname J1 -fixed yes
+set_io B_CMD_LOCKn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname J3 -fixed yes
+set_io B_DL_CLK -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname G2 -fixed yes
+set_io B_DL_DATA -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname L8 -fixed yes
+set_io B_DL_ENA -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname J6 -fixed yes
+set_io C_CMD_CLK -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname L3 -fixed yes
+set_io C_CMD_DATA -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname M3 -fixed yes
+set_io C_CMD_LOCKn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname M4 -fixed yes
+set_io C_DL_CLK -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname G1 -fixed yes
+set_io C_DL_DATA -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname G4 -fixed yes
+set_io C_DL_ENA -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname E3 -fixed yes
+set_io D_CMD_CLK -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname N8 -fixed yes
+set_io D_CMD_DATA -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname M6 -fixed yes
+set_io D_CMD_LOCKn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname N7 -fixed yes
+set_io D_DL_CLK -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname M5 -fixed yes
+set_io D_DL_DATA -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname G3 -fixed yes
+set_io D_DL_ENA -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname J5 -fixed yes
+set_io EL_A_RDY -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname H5 -fixed yes
+set_io EL_B_RDY -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname H4 -fixed yes
+set_io EL_C_RDY -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname H6 -fixed yes
+set_io EL_D_RDY -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname J4 -fixed yes
+set_io SC_ID0 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname B5 -fixed yes
+set_io SC_ID1 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname G7 -fixed yes
+set_io SC_ID2 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname B4 -fixed yes
+set_io SC_ID3 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname G6 -fixed yes
+set_io SC_ID4 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname H8 -fixed yes
+set_io SC_ID5 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname F8 -fixed yes
+set_io SC_ID6 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname H7 -fixed yes
+set_io SC_ID7 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname F7 -fixed yes
+set_io SC_ID8 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname J8 -fixed yes
+set_io SC_ID9 -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname B6 -fixed yes
+set_io SDST_A_RSTn -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname B12 -fixed yes
+set_io SDST_B_RSTn -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname H11 -fixed yes
+set_io SDST_C_RSTn -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname D12 -fixed yes
+set_io SDST_D_RSTn -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname A10 -fixed yes
+set_io SDST_AB_PORT_SEL -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname A11 -fixed yes
+set_io SDST_CD_PORT_SEL -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname D11 -fixed yes
+set_io STRING_ID -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname J7 -fixed yes
+set_io UL_A_SDST_ELn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname A5 -fixed yes
+set_io UL_B_SDST_ELn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname C9 -fixed yes
+set_io UL_C_SDST_ELn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname A4 -fixed yes
+set_io UL_D_SDST_ELn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname C8 -fixed yes
+
+set_io RAM_ADDR00 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname Y21 -fixed yes
+set_io RAM_ADDR01 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname Y22 -fixed yes
+set_io RAM_ADDR02 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname Y23 -fixed yes
+set_io RAM_ADDR03 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname Y24 -fixed yes
+set_io RAM_ADDR04 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname Y25 -fixed yes
+set_io RAM_ADDR05 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname AA23 -fixed yes
+set_io RAM_ADDR06 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname AA24 -fixed yes
+set_io RAM_ADDR07 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname AA25 -fixed yes
+set_io RAM_ADDR08 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname V23 -fixed yes
+set_io RAM_ADDR09 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname V22 -fixed yes
+set_io RAM_ADDR10 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname V20 -fixed yes
+set_io RAM_ADDR11 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname V21 -fixed yes
+set_io RAM_ADDR12 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname AB24 -fixed yes
+set_io RAM_ADDR13 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname V24 -fixed yes
+set_io RAM_ADDR14 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname AB25 -fixed yes
+set_io RAM_DATA00 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname U25 -fixed yes
+set_io RAM_DATA01 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname U24 -fixed yes
+set_io RAM_DATA02 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname U22 -fixed yes
+set_io RAM_DATA03 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname U21 -fixed yes
+set_io RAM_DATA04 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname U20 -fixed yes
+set_io RAM_DATA05 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname U19 -fixed yes
+set_io RAM_DATA06 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname T25 -fixed yes
+set_io RAM_DATA07 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname T24 -fixed yes
+set_io RAM_DATA08 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname T22 -fixed yes
+set_io RAM_DATA09 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname T20 -fixed yes
+set_io RAM_DATA10 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname T19 -fixed yes
+set_io RAM_DATA11 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname T18 -fixed yes
+set_io RAM_DATA12 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname R25 -fixed yes
+set_io RAM_DATA13 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname R24 -fixed yes
+set_io RAM_DATA14 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname R23 -fixed yes
+set_io RAM_DATA15 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname R22 -fixed yes
+set_io RAM_DATA16 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname R21 -fixed yes
+set_io RAM_DATA17 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname R20 -fixed yes
+set_io RAM_DATA18 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname R19 -fixed yes
+set_io RAM_DATA19 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname P25 -fixed yes
+set_io RAM_DATA20 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname P23 -fixed yes
+set_io RAM_DATA21 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname P22 -fixed yes
+set_io RAM_DATA22 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -OUT_LOAD 35 -pinname P20 -fixed yes
+set_io RAM_DATA23 -iostd LVTTL -REGISTER Yes -OUT_DRIVE 8 -SLEW High -RES_PULL Down -OUT_LOAD 35 -pinname P19 -fixed yes
+set_io RAM_CE -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname R18 -fixed yes
+set_io RAM_CSn -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname W25 -fixed yes
+set_io RAM_DATA_WRn -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname W23 -fixed yes
+set_io RAM_EDAC_WRn -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname W22 -fixed yes
+set_io RAM_OEn -iostd LVTTL -REGISTER Yes -OUT_DRIVE 12 -SLEW High -RES_PULL None -OUT_LOAD 35 -pinname W24 -fixed yes
+
+set_io TP0 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname F11 -fixed yes
+set_io TP1 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname B11 -fixed yes
+set_io TP2 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname B10 -fixed yes
+set_io TP3 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname A9 -fixed yes
+set_io TP4 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname H10 -fixed yes
+set_io TP5 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname B9 -fixed yes
+set_io TP6 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname H9 -fixed yes
+set_io TP7 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL Down -IN_DELAY Off -OUT_LOAD 35 -pinname C11 -fixed yes
+
+set_io DA_TLM_FRM_SYNC -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname E11 -fixed yes
+set_io LV_TLM_RS422_ENAn -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname P21 -fixed yes
+set_io TZ_CMD_CLK -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname J25 -fixed yes
+set_io TZ_CMD_DATA -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname N18 -fixed yes
+set_io TZ_CMD_ENABLEn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname M20 -fixed yes
+set_io TZ_CMD_LOCKn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname N19 -fixed yes
+set_io TZ_ECHO_CMD_CLK -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname Y10 -fixed yes
+set_io TZ_ECHO_CMD_DATA -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname V11 -fixed yes
+set_io TZ_ECHO_CMD_LOCKn -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname T13 -fixed yes
+set_io TZ_LV_TLM_CLK -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname W16 -fixed yes
+set_io TZ_LV_TLM_DATA -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname Y15 -fixed yes
+set_io TZ_TLM_RS422_ENA -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname V18 -fixed yes
+set_io TZ_ONLINEn -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname N20 -fixed yes
+set_io TZ_PRIMEn -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname P24 -fixed yes
+set_io TZ_RELAY_ONn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname U18 -fixed yes
+set_io TZ_TEST_ENABLEn -iostd LVTTL -REGISTER No -RES_PULL Up -IN_DELAY Off -pinname W18 -fixed yes
+
+set_io BRD_ID0 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname AA19 -fixed yes
+set_io BRD_ID1 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname AB14 -fixed yes
+set_io BRD_ID2 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname AB15 -fixed yes
+set_io BRD_ID3 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname AB16 -fixed yes
+set_io BRD_ID4 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname AB17 -fixed yes
+set_io BRD_ID5 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname AB19 -fixed yes
+set_io BRD_ID6 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname V15 -fixed yes
+set_io BRD_ID7 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname V16 -fixed yes
+
+#Reserved Do not use these pins
+#set_io PSYNC_N -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname E7 -fixed yes
+#set_io PSYNC_P -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname D7 -fixed yes
+#set_io DEGn -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname J13 -fixed yes
+
+#Shorted to Ground, need to remove Board Short Prior to Use
+#set_io SP_CLK_0 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname B14 -fixed yes
+#set_io SP_CLK_1 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname C12 -fixed yes
+#set_io SP_CLK_2 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname C13 -fixed yes
+#set_io SP_CLK_3 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname G13 -fixed yes
+#set_io SP_CLK_4 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname G14 -fixed yes
+
+#Unused and unassigned pins:
+#set_io SP_IO_1 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname V9 -fixed yes
+#set_io SP_IO_2 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W11 -fixed yes
+#set_io SP_IO_3 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname G15 -fixed yes
+#set_io SP_IO_4 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname E23 -fixed yes
+#set_io SP_IO_5 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname U23 -fixed yes
+#set_io SP_IO_6 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname Y20 -fixed yes
+#set_io SP_IO_7 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W20 -fixed yes
+#set_io SP_IO_8 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W19 -fixed yes
+#set_io SP_IO_9 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname V19 -fixed yes
+#set_io SP_IO_10 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname AA17 -fixed yes
+#set_io SP_IO_11 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname Y17 -fixed yes
+#set_io SP_IO_12 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W17 -fixed yes
+#set_io SP_IO_13 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname V17 -fixed yes
+#set_io SP_IO_14 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname Y16 -fixed yes
+#set_io SP_IO_15 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W14 -fixed yes
+
+#Unused in EM Assigned to Unused Pin, Kept For PT
+#set_io SP_IO_19 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W12 -fixed yes
+set_io TP_DIR -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname W12 -fixed yes
+#set_io SP_IO_20 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname Y11 -fixed yes
+set_io LV_TLM_RS422_ENA -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname Y11 -fixed yes
+#set_io SP_IO_18 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname U13 -fixed yes
+set_io FDU_ENA0 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname U13 -fixed yes
+#set_io SP_IO_17 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname V13 -fixed yes
+set_io FDU_ENA1 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname V13 -fixed yes
+#set_io SP_IO_16 -iostd LVTTL -REGISTER No -RES_PULL Down -IN_DELAY Off -pinname W13 -fixed yes
+set_io FDU_ENA2 -iostd LVTTL -REGISTER No -OUT_DRIVE 8 -SLEW Low -RES_PULL None -OUT_LOAD 35 -pinname W13 -fixed yes
+
+
+
+#
+# Region constraints does not work
+#
+
+#define_region -name PCIregion -type inclusive 20 1 1059 45
+#assign_region PCIregion {*U_pci*}
+#assign_region PCIregion {*U_dma*}
+define_region -name PCIregion -type inclusive 0 0 1050 15
+assign_region PCIregion {*U_pci_/Eng_*}
+
+#assign these to the ram blocks you want
+
+set_location core_/U_bi_/EVEN_RAM_/edac/u_ram4kx6_actel/RAM64K36_Q_0_inst -fixed yes 800 37
+set_location core_/U_bi_/EVEN_RAM_/edac/u_ram4kx6_actel/RAM64K36_Q_4_inst -fixed yes 800 65
+set_location core_/U_bi_/EVEN_RAM_/edac/u_ram4kx6_actel/RAM64K36_Q_5_inst -fixed yes 800 72
+set_location core_/U_bi_/EVEN_RAM_/edac/u_ram4kx6_actel/RAM64K36_Q_2_inst -fixed yes 800 51
+set_location core_/U_bi_/EVEN_RAM_/edac/u_ram4kx6_actel/RAM64K36_Q_1_inst -fixed yes 800 44
+set_location core_/U_bi_/EVEN_RAM_/edac/u_ram4kx6_actel/RAM64K36_Q_3_inst -fixed yes 800 58
+
+set_location core_/U_bi_/ODD_RAM_/edac/u_ram4kx6_actel/RAM64K36_Q_2_inst -fixed yes 540 51
+set_location core_/U_bi_/ODD_RAM_/edac/u_ram4kx6_actel/RAM64K36_Q_5_inst -fixed yes 540 72
+set_location core_/U_bi_/ODD_RAM_/edac/u_ram4kx6_actel/RAM64K36_Q_4_inst -fixed yes 540 65
+set_location core_/U_bi_/ODD_RAM_/edac/u_ram4kx6_actel/RAM64K36_Q_0_inst -fixed yes 540 37
+set_location core_/U_bi_/ODD_RAM_/edac/u_ram4kx6_actel/RAM64K36_Q_1_inst -fixed yes 540 44
+set_location core_/U_bi_/ODD_RAM_/edac/u_ram4kx6_actel/RAM64K36_Q_3_inst -fixed yes 540 58
+
+set_location core_/U_dl_/PONG_/EPPRAM/EDRAMPP_/u_ram512x8_actel/RAM64K36_Q_0_inst -fixed yes 540 30
+set_location core_/U_dl_/PING_/EPPRAM/EDRAMPP_/u_ram512x8_actel/RAM64K36_Q_0_inst -fixed yes 800 30
+
+set_location core_/U_dl_/PONG_/EPPRAM/PPRAM_/u_ram512x32_actel/RAM64K36_Q_0_inst -fixed yes 540 23
+set_location core_/U_dl_/PONG_/EPPRAM/PPRAM_/u_ram512x32_actel/RAM64K36_Q_9_inst -fixed yes 540 16
+set_location core_/U_dl_/PONG_/EPPRAM/PPRAM_/u_ram512x32_actel/RAM64K36_Q_18_inst -fixed yes 540 9
+set_location core_/U_dl_/PONG_/EPPRAM/PPRAM_/u_ram512x32_actel/RAM64K36_Q_27_inst -fixed yes 540 2
+set_location core_/U_dl_/PING_/EPPRAM/PPRAM_/u_ram512x32_actel/RAM64K36_Q_9_inst -fixed yes 800 16
+set_location core_/U_dl_/PING_/EPPRAM/PPRAM_/u_ram512x32_actel/RAM64K36_Q_27_inst -fixed yes 800 2
+set_location core_/U_dl_/PING_/EPPRAM/PPRAM_/u_ram512x32_actel/RAM64K36_Q_0_inst -fixed yes 800 23
+set_location core_/U_dl_/PING_/EPPRAM/PPRAM_/u_ram512x32_actel/RAM64K36_Q_18_inst -fixed yes 800 9

@@ -1,0 +1,25 @@
+// NOTE: This file makes use of Verilog-Mode AUTOs to instantiate the DUT.  To
+// update the DUT instantiation run:
+//
+//     verilog-autos <path-to-this-file>
+//
+// See [1] for documentation on Verilog-Mode AUTOs.
+//
+// [1]: https://www.veripool.org/projects/verilog-mode/wiki/Verilog-mode_veritedium
+
+module tb();
+/*AUTOWIRE*/
+
+/*AUTOREGINPUT*/
+
+/* <%= unit_identifier %> AUTO_TEMPLATE (
+);
+*/
+<%= unit_identifier %> <%= unit_identifier %>_0
+	( /*AUTOINST*/ );
+
+endmodule
+
+// Local Variables:
+// eval:(setq verilog-library-flags (concat "-f " (substitute-in-file-name "$<%= unit_identifier.upcase %>") "/verif/obj/default/verilog.f"))
+// End:

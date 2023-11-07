@@ -1,0 +1,23 @@
+export PROJECT=<%= project %>
+
+# Units
+export <%= project_identifier.upcase %>=$SBOX/<%= project %>
+
+source $SBOX/common/config/setup.sh
+
+# Optionally override the default environment here.
+#
+# Example:
+#
+#  export QUESTA_VERSION=2020.4_2
+#  export QUESTA_ROOT=/opt/mentor/apps/questa/v${QUESTA_VERSION}/questasim
+#  export MODEL_TECH=$QUESTA_ROOT
+#  export MODELSIM=${QUESTA_ROOT}/modelsim.ini
+#  export MTI_VCO_MODE=64
+#  export PATH="${QUESTA_ROOT}/linux_x86_64:$PATH"
+#  echo "Using Mentor Questa $QUESTA_VERSION $MTI_VCO_MODE-bit at $QUESTA_ROOT"
+#
+#  export UVM_VERSION=1.2
+#  export UVM_HOME=$QUESTA_ROOT/uvm-${UVM_VERSION}
+#  export UVM_SRC_HOME=$QUESTA_ROOT/verilog_src/uvm-${UVM_VERSION}
+#  echo "Using UVM $UVM_VERSION at $UVM_HOME"

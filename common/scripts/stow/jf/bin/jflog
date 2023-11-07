@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/jf'
+
+module JF
+  def self.main
+    Logger.get_global
+
+  end
+end
+
+JF.main
+
+logger = JF::Logger.get_global
+logger.name = "jflog"
+logger.verbosity += 1
+
+logger.debug "debug"
+logger.info "info"
+logger.error "error"

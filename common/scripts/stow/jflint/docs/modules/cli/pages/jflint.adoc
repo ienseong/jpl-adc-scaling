@@ -1,0 +1,86 @@
+= jflint(1)
+ifndef::doctype-manpage[:doctitle: jflint]
+
+ifdef::doctype-manpage[]
+== Name
+
+jflint -
+endif::[]
+Frontend for RTL linting
+
+== Synopsis
+
+[verse]
+_jflint_ [OPTIONS] [DEFINES] <module>
+
+== Description
+
+The jflint script is a frontend for RTL linting that targets Mentor HDL Designer Series.
+
+It runs Mentor HDL Designer Series on an RTL module, formats the report, and applies any user defined waivers.
+
+== Options
+
+\+define+<define>::
+  Passes defines to the file list preprocessor as well as the RTL.
+  Can specify multiple times to pass multiple defines.
+  Example: `+define+DEFINE0 +define+DEFINE1+DEFINE2`
+
+-u, --unit <unit>::
+  Path to unit.
+  Path can be relative to $SBOX or absolute.
+  Example: `--unit eio`.
+  Default: inferred using `pwd`.
+
+-b, --blackbox <library>::
+  Space separated list of libraries to blackbox.
+  Example: `--blackbox 'libraryA libraryB'`.
+  Default: 'unisim AXCELERATOR'.
+
+--init [<mode>]::
+  Initialize the $SBOX with a default set of lint rules.
+  Valid modes: symlink, copy.
+  Default: symlink.
+
+--gui::
+  Run in GUI mode.
+
+-h::
+  Short help.
+
+--help::
+  Long help.
+
+== Files
+
+`$SBOX/lint/rules`::
+  Directory containing the lint ruleset.
+  Required.
+  Defaults to a symlink to `$J5_COMMON/scripts/stow/jflint/share/jflint/rules`.
+
+`<unit>/lint/waivers.yml`::
+  Unit specific lint waivers.
+  Optional.
+  Waivers in this file are automatically applied if this file is present.
+
+`<unit>/rtl/rtl.f`::
+  The RTL file list used to obtain the list of RTL files available for linting.
+
+== Exit Status
+
+The exit status is non-zero (error) for the following conditions:
+
+* Application errors
+* Presence of one or more unwaived lint violations with severity of ERROR, SYNTHESIS, or SYNTAX
+
+The exit status is zero (success) when lint violations have severities of WARNING or NOTE only.
+
+== Examples
+
+* Run lint on the 'mydut_top' module in the 'mydut' unit
++
+ jflint --unit mydut mydut_top
+
+* Run lint with some defines
++
+ jflint --unit mydut mydut_top +define+SYNTHESIS+TARGET=RTAX

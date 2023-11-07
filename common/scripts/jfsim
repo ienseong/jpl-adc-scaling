@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+begin
+  require_relative '../lib/jfsim'
+
+  JFSim::Application.new(ARGV).run
+rescue Interrupt
+  exit 130
+end

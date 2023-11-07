@@ -1,0 +1,14 @@
+#!/bin/sh
+
+cat <<EOF 1>&2
+
+WARNING: The 'avsim' command has been deprecated.  It has been renamed to
+WARNING: 'jfsim'.  Please update your usage.
+WARNING:
+WARNING: The 'avsim' command will be removed after June 1st 2017.
+
+EOF
+
+sleep 1
+
+jfsim "$@"

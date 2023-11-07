@@ -1,0 +1,12 @@
+#!/usr/bin/env groovy
+
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                build '/jfve/jfve-docs-site/master'
+            }
+        }
+    }
+}

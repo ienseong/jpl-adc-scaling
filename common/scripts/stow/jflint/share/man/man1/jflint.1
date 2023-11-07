@@ -1,0 +1,173 @@
+'\" t
+.\"     Title: jflint
+.\"    Author: Rob Donnelly <robert.donnelly@jpl.nasa.gov>
+.\" Generator: Asciidoctor 2.0.10
+.\"      Date: 2020-05-12
+.\"    Manual: J5 Manual
+.\"    Source: fpga-common master
+.\"  Language: English
+.\"
+.TH "JFLINT" "1" "2020-05-12" "fpga\-common master" "J5 Manual"
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.ss \n[.ss] 0
+.nh
+.ad l
+.de URL
+\fI\\$2\fP <\\$1>\\$3
+..
+.als MTO URL
+.if \n[.g] \{\
+.  mso www.tmac
+.  am URL
+.    ad l
+.  .
+.  am MTO
+.    ad l
+.  .
+.  LINKSTYLE blue R < >
+.\}
+.SH "NAME"
+jflint \- Frontend for RTL linting
+.SH "SYNOPSIS"
+.sp
+.sp
+.nf
+\fIjflint\fP [OPTIONS] [DEFINES] <module>
+.fi
+.br
+.SH "DESCRIPTION"
+.sp
+The jflint script is a frontend for RTL linting that targets Mentor HDL Designer Series.
+.sp
+It runs Mentor HDL Designer Series on an RTL module, formats the report, and applies any user defined waivers.
+.SH "OPTIONS"
+.sp
++define+<define>
+.RS 4
+Passes defines to the file list preprocessor as well as the RTL.
+Can specify multiple times to pass multiple defines.
+Example: \f(CR+define+DEFINE0 +define+DEFINE1+DEFINE2\fP
+.RE
+.sp
+\-u, \-\-unit <unit>
+.RS 4
+Path to unit.
+Path can be relative to $SBOX or absolute.
+Example: \f(CR\-\-unit eio\fP.
+Default: inferred using \f(CRpwd\fP.
+.RE
+.sp
+\-b, \-\-blackbox <library>
+.RS 4
+Space separated list of libraries to blackbox.
+Example: \f(CR\-\-blackbox \(aqlibraryA libraryB\(aq\fP.
+Default: \(aqunisim AXCELERATOR\(aq.
+.RE
+.sp
+\-\-init [<mode>]
+.RS 4
+Initialize the $SBOX with a default set of lint rules.
+Valid modes: symlink, copy.
+Default: symlink.
+.RE
+.sp
+\-\-gui
+.RS 4
+Run in GUI mode.
+.RE
+.sp
+\-h
+.RS 4
+Short help.
+.RE
+.sp
+\-\-help
+.RS 4
+Long help.
+.RE
+.SH "FILES"
+.sp
+\f(CR$SBOX/lint/rules\fP
+.RS 4
+Directory containing the lint ruleset.
+Required.
+Defaults to a symlink to \f(CR$J5_COMMON/scripts/stow/jflint/share/jflint/rules\fP.
+.RE
+.sp
+\f(CR<unit>/lint/waivers.yml\fP
+.RS 4
+Unit specific lint waivers.
+Optional.
+Waivers in this file are automatically applied if this file is present.
+.RE
+.sp
+\f(CR<unit>/rtl/rtl.f\fP
+.RS 4
+The RTL file list used to obtain the list of RTL files available for linting.
+.RE
+.SH "EXIT STATUS"
+.sp
+The exit status is non\-zero (error) for the following conditions:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Application errors
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Presence of one or more unwaived lint violations with severity of ERROR, SYNTHESIS, or SYNTAX
+.RE
+.sp
+The exit status is zero (success) when lint violations have severities of WARNING or NOTE only.
+.SH "EXAMPLES"
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Run lint on the \(aqmydut_top\(aq module in the \(aqmydut\(aq unit
+.sp
+.if n .RS 4
+.nf
+jflint \-\-unit mydut mydut_top
+.fi
+.if n .RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Run lint with some defines
+.sp
+.if n .RS 4
+.nf
+jflint \-\-unit mydut mydut_top +define+SYNTHESIS+TARGET=RTAX
+.fi
+.if n .RE
+.RE
+.SH "AUTHOR"
+.sp
+Rob Donnelly <robert.donnelly@jpl.nasa.gov>

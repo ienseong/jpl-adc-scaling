@@ -1,0 +1,307 @@
+#!/usr/bin/env ruby
+#
+# NAME
+#
+#     jflint
+#
+# SYNOPSIS
+#
+#     jflint [options] <module> [+defines]
+#
+# DESCRIPTION
+#
+#     Runs Mentor HDL Studio to lint Verilog/SystemVerilog RTL.
+#
+#     In more detail, the following steps are performed:
+#
+#     1. Create a filelist
+#     2. Run Mentor HDL Studio (HDS)
+#     3. Convert the violation report from CSV to YAML
+#     4. Filter the violations
+
+require 'fileutils'
+require 'yaml'
+require 'pathname'
+
+require_relative '../lib/jflint'
+
+SCRIPT_PATH = __dir__
+SCRIPT_ROOT = File.dirname(SCRIPT_PATH)
+
+DEFAULT_RULES_PATH = File.join(SCRIPT_ROOT, 'share/jflint/rules')
+TCL_SCRIPT = File.join(SCRIPT_ROOT, 'share/jflint/lint.tcl')
+
+class Options
+  require 'optparse'
+  require 'ostruct'
+
+  INIT_MODES = [:symlink, :copy]
+
+  def defaults
+    options = OpenStruct.new
+
+    options.init = false
+    options.mode = :batch
+    options.module = nil
+    options.defines = %w(SYNTHESIS)
+    options.sbox = get_envar('SBOX')
+    options.blackbox = 'unisim AXCELERATOR'
+    options.lint_path = File.join(options.sbox, 'lint')
+    options.rules_path = File.join(options.lint_path, 'rules')
+    options.work_path = File.join(options.lint_path, 'reports')
+
+    options
+  end
+
+  def parse(args)
+    options = defaults
+
+    op = OptionParser.new do |op|
+      op.banner = ""
+
+      lines = <<~EOF
+      NAME
+
+          jflint
+
+      SYNOPSIS
+
+          jflint [<option(s)>] <module> [+defines]
+
+      EXAMPLES
+
+          jflint --unit hk hk +define+DEFINE1+DEFINE2 +define+DEFINE3
+
+      OPTIONS
+      EOF
+      lines.split("\n").each { |line| op.separator(line) }
+      op.separator("")
+
+      op.on('-u', '--unit <unit>', "Path to unit.  Can be relative to $SBOX." \
+            " Example: --unit 'hk', --unit '$SBOX/vp'." \
+            " Default: inferred using PWD.") do |arg|
+        options.unit = arg
+      end
+      op.on('--no-synthesis', "Run without SYNTHESIS defined.") do
+        options.defines = []
+      end
+      op.on('-b', '--blackbox <library>', "A space separated list of libraries to blackbox." \
+            " Example: --blackbox 'libraryA libraryB'." \
+            " Default: '#{options.blackbox}'.") do |arg|
+        options.blackbox = arg
+      end
+      op.on('--init [<mode>]', INIT_MODES, "Initialize the $SBOX with a default" \
+            " set of lint rules.  Valid modes: #{INIT_MODES.join(' ')}." \
+            " Default: symlink.") do |arg|
+        options.init = true
+        options.init_mode = arg || :symlink
+      end
+      op.on('--gui', "Run in GUI mode.") do
+        options.mode = :gui
+      end
+      op.on('-h', 'Short help.') do
+        puts op
+        exit
+      end
+      op.on('--help', 'Long help.') do
+        man_path = File.expand_path(File.join(__dir__, '../share/man/man1/jflint.1'))
+        exec "man #{man_path}"
+      end
+    end
+    op.parse!(args)
+
+    args, plus_args = categorize_arguments(args)
+    check_arguments(options, args, plus_args, op)
+    transform_options(op, options, args, plus_args)
+
+    options
+  end
+
+  def categorize_arguments(args)
+    grouped_args = args.group_by { |arg| arg.start_with?('+') }
+
+    [false, true].map { |key| Array(grouped_args[key]) }
+  end
+
+  def transform_options(option_parser, options, args, plus_args)
+    options.module = args.shift
+    options.defines += parse_defines(plus_args)
+
+    unless options.init
+      options.unit ||= JF::Unit.infer
+      options.unit = JF::Unit::from_option(options.unit)
+      raise JF::Error, "could not find '#{options.unit.rtl_filelist}'.  Check the --unit option.\n#{option_parser}" unless File.exist?(options.unit.rtl_filelist)
+    end
+  end
+
+  def check_arguments(options, args, plus_args, usage)
+    raise JF::Error, "missing module argument\n#{usage}" unless args.size > 0 || options.init
+    raise JF::Error, "only a single module argument is supported\n#{usage}" unless args.size <= 1
+
+    invalid_plus_args = plus_args.select { |plus_arg| !plus_arg.start_with?('+define+') }
+    raise JF::Error, "unrecognized plus args: #{invalid_plus_args.join(', ')}" if invalid_plus_args.size > 0
+  end
+
+  def parse_defines(plus_args)
+    plus_args.each_with_object([]) do |plus_arg, defines|
+      defines << plus_arg.gsub('+define+', '').split('+')
+    end
+    .flatten
+  end
+end
+
+def main(argv)
+  init_logger
+
+  warning("jflint has been deprecated in favor of Questa Lint. See https://github.jpl.nasa.gov/pages/jfve/handbook/design/lint for more information.")
+
+  options = Options.new.parse(ARGV)
+
+  if options.init
+    init_rules(options)
+  else
+    do_lint(options)
+  end
+end
+
+def init_rules(options)
+  FileUtils.mkdir_p(options.lint_path)
+
+  raise JF::Error, "Path '#{options.rules_path}' already exists" if File.exist?(options.rules_path) || File.symlink?(options.rules_path)
+
+  case options.init_mode
+  when :symlink
+    default_rules_path_relative = Pathname.new(DEFAULT_RULES_PATH).relative_path_from(
+      Pathname.new(File.dirname(options.rules_path))
+    )
+    FileUtils.ln_s(default_rules_path_relative, options.rules_path)
+    info("ln -s #{default_rules_path_relative} #{options.rules_path}")
+  when :copy
+    FileUtils.cp_r(DEFAULT_RULES_PATH, options.rules_path)
+    info("cp -r #{DEFAULT_RULES_PATH} #{options.rules_path}")
+  end
+end
+
+def do_lint(options)
+  # HDS binary
+  hds_bin = File.join(get_envar('HDS_ROOT'), 'bin/hds')
+
+  # Paths
+  project_name = options.module
+  lint_filelist = File.join(options.work_path, options.module, 'lint.f')
+
+  plus_defines =
+    if options.defines.empty?
+      ""
+    else
+      "+define+#{options.defines.join('+')}"
+    end
+
+  # Setup the environment
+  # The environment is used to pass values to the HDS TCL script
+  ENV.update({
+    'PROJ_NAME' => project_name,
+    'TOP_LEVEL' => options.module,
+    'FILELIST' => lint_filelist,
+    'RULES_POLICY' => 'My_Checklist_Policy',
+    'PREFS_SETUP' => options.rules_path,
+    'WORK_DIR' => options.work_path,
+    'HDS_USER_HOME' => File.join(options.rules_path, 'hds_user'),
+    'HDS_POLICY_DIR' => File.join(options.rules_path, 'dc_user/policies'),
+    'HDS_RULESET_DIR' => File.join(options.rules_path, 'dc_user/rulesets'),
+    'TEMP' => '/tmp',
+    'ACTEL_ROOT' => get_envar('ALSDIR'),
+    'PLUS_DEFINES' => plus_defines,
+    'BLACKBOX' => options.blackbox,
+
+    # Prevent failure due to license expiration warning
+    # https://supportnet.mentor.com/portal?do=reference.technote&id=MG590434
+    'MGLS_EXP_WARN_DAYS' => '1',
+
+    # Clear LD_LIBRARY_PATH to prevent library version issues
+    'LD_LIBRARY_PATH' => '',
+  })
+
+  # Design Checker fails when DISPLAY is invalid but is fine with an unset
+  # DISPLAY
+  ENV.delete('DISPLAY') unless options.mode == :gui
+
+  # Clean up previous run
+  project_path = File.join(options.work_path, project_name)
+  if Dir.exists?(project_path)
+    FileUtils.rm_rf(project_path)
+    FileUtils.rm_rf(lint_filelist)
+  end
+
+  # Create the results directory
+  FileUtils.mkdir_p(File.join(options.work_path, options.module))
+
+  # Log environment for debug
+  env_file = File.join(options.work_path, options.module, 'lint.env')
+  File.open(env_file, 'w') { |file| file.write ENV.to_h.to_yaml }
+
+  # Create the filelist
+  flpp_defines = options.defines.map { |define| "-D#{define}" }.join(' ')
+  syscmd("flpp #{flpp_defines} #{options.unit.rtl_filelist} | #{SCRIPT_PATH}/jflint-filelist > #{lint_filelist}")
+
+  # Lint
+  hdp_file = File.join(options.work_path, options.module, 'lint.hdp')
+  log_file = File.join(options.work_path, options.module, 'lint.log')
+  if options.mode == :gui
+    syscmd("#{hds_bin} -hdpfile #{hdp_file} -do #{TCL_SCRIPT} 2>&1 | tee #{log_file}")
+  else
+    syscmd("#{hds_bin} -hdpfile #{hdp_file} -tcl #{TCL_SCRIPT} 2>&1 | tee #{log_file}")
+  end
+  error_present, line, line_number = parse_log_for_errors(log_file)
+  raise JF::Error, "Error present in log (#{log_file})\n#{line_number}:#{line}" if error_present
+
+  # Convert the violation report from CSV to YAML
+  report_file = File.join(options.work_path, options.module, 'violations')
+  syscmd("#{SCRIPT_PATH}/jflint-format-report #{report_file}.csv > #{report_file}_unfiltered.yml")
+
+  # Filter the violations
+  waivers_file = File.join(options.unit, 'lint/waivers.yml')
+  syscmd("#{SCRIPT_PATH}/jflint-filter --input #{report_file}_unfiltered.yml --waivers #{waivers_file} --output #{report_file}.yml")
+end
+
+def get_envar(name)
+  raise JF::Error, "The $#{name} environment variable is undefined." unless ENV.key?(name)
+
+  ENV[name]
+end
+
+def syscmd(cmd)
+  info("Running '#{cmd}'")
+  exit 1 unless system(cmd)
+end
+
+def parse_log_for_errors(path)
+  error_pattern = /failed to run properly.$/
+
+  File.open(path, 'r').each_line.with_index do |line, index|
+    return [true, line, index + 1] if line.match(error_pattern)
+  end
+
+  [false]
+end
+
+def init_logger
+  @logger ||= JF::Logger.get
+  @logger.name = "jflint"
+end
+
+def info(message)
+  @logger.info message
+end
+
+def warning(message)
+  @logger.warning message
+end
+
+begin
+  main(ARGV)
+rescue JF::Error => e
+  abort "ERROR: jflint: #{e.message}"
+rescue OptionParser::ParseError => e
+  abort "ERROR: jflint: #{e.message}. See `jflint --help`."
+end

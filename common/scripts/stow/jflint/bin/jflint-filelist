@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+#
+# NAME
+#
+#     jflint-filelist - transform rtl.f for lint
+#
+# SYNOPSIS
+#
+#     jflint-filelist <rtl.f> > <lint.f>
+#
+# DESCRIPTION
+#
+#     Collects and removes all +incdirs from an rtl.f file then transforms them
+#     into a single %SEARCH_PATH statement at the top of the output.  Then
+#     outputs all non-incdir lines.
+
+lines = []
+incdirs = []
+
+ARGF.each do |line|
+  if md = line.match(/^\s*\+incdir\+(.*)$/)
+    incdirs << md.captures.first
+  else
+    lines << line
+  end
+end
+
+puts "%SEARCH_PATH #{incdirs.join(';')}" if !incdirs.empty?
+puts lines.join

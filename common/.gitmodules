@@ -1,0 +1,3 @@
+[submodule "scripts/stow/jobrnr"]
+	path = scripts/stow/jobrnr
+	url = https://github.com/rfdonnelly/jobrnr.git

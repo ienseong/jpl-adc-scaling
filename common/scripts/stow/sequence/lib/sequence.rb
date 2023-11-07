@@ -1,0 +1,5 @@
+require_relative 'sequence/methods'
+require_relative 'sequence/sequence'
+require_relative 'sequence/value'
+require_relative 'sequence/pattern'
+require_relative 'sequence/weighted'

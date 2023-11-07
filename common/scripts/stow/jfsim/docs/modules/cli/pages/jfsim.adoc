@@ -1,0 +1,382 @@
+= jfsim(1)
+ifndef::doctype-manpage[:doctitle: jfsim]
+
+ifdef::doctype-manpage[]
+== Name
+
+jfsim -
+endif::[]
+Frontend for HDL simulation
+
+== Synopsis
+
+[verse]
+____
+_jfsim_ [OPTIONS] [PLUSARGS]
+
+_jfsim_ --clean [OPTIONS] [PLUSARGS]
+_jfsim_ --compile [OPTIONS] [PLUSARGS]
+_jfsim_ --run [OPTIONS] [PLUSARGS]
+_jfsim_ --rerun <resdir>
+____
+
+== Description
+
+The jfsim script is a frontend for HDL simulation that targets Mentor Questa.
+
+== Options
+
+=== General Options
+
+-n, --dry-run::
+Display the Rake command without running it.
+
+-u, --unit <unit>::
+Path to unit.  Path can be relative to $SBOX or absolute.  Default: inferred
+using `pwd`.
+
+--resdir <resdir>::
+Path to results directory.  Path can be relative to `<unit>/verif/results.
+Default: 'default'.
+
+--[no-]lsf::
+(EXPERIMENTAL) Enable or disable LSF submission.  Default: disabled.
+
+--host <host>::
+(EXPERIMENTAL) The host to run on.  Default: 'localhost'.
+
+--rerun <resdir>::
+(EXPERIMENTAL) Rerun a previous simulation.
+
+=== Targets
+
+The default target is '--compile --run' if none is specified.
+
+--compile::
+Create simulation binary.
+
+--run::
+Run simulation binary.
+
+--clean [<clean-target>]::
+Clean one of: 'obj', 'results', 'all'.  Default: 'obj'.
++
+* obj -- removes <unit>/verif/obj
+* results -- removes <unit>/verif/results
+* all -- removes <unit>/verif/obj and <unit>/verif/results
+
+=== Compile Options
+
+The following options are only applicable for the `--compile` target.
+
+--gate::
+Compile for gate simulation.  Defines `GATE`.
+
+--netlist <netlist-path>::
+Path to netlist for use with `--gate`.  Defines `NETLIST`=<netlist-path>.
+
+--compopts <compopts>::
+Additional options to pass to the SystemVerilog compiler (vlog).
+
+--vhdlopts <vhdlopts>::
+Additional options to pass to the VHDL compiler (vcom).
+
+--objdir <objdir>::
+Object directory.  Useful when creating multiple concurrent simulation
+images.  Path must be relative to `<unit>/verif/obj`.  Default: 'default'.
+
+--optopts <optopts>::
+Additional options to pass to the optimizer (vopt).
+
+--top-module <module>::
+The top module(s) of the testbench.  Multiple top modules may be specified
+as a quoted space-delimited string.  Default: 'tb'.
+
+=== Run Options
+
+The following options are only applicable for the `--run` target.
+
+-t, --test <test-name>::
+The test to run.  Passes `+UVM_TESTNAME=<test-name>`.
+
+-i, --interactive::
+Run the simulator via interactive CLI.  Loads the simulator but does not
+start the simulation.  This allows the setting of breakpoints before
+starting the simulation.
+
+-g, --gui::
+Run the simulator via interactive GUI.  Loads the simulator but does not start
+the simulation.  This allows the setting of breakpoints before starting the
+simulation.
++
+This uses the legacy GUI by default.  Combine with the `--visualizer` option
+to use Visualizer instead.
+
+--seed <seed>::
+Set all seeds for randomization.  Valid values: <decimal-value>,
+<hexadecimal-value>, 'random'. Default: '0'.
+
+--maxerrs <maxerrs>::
+Terminate simulation when <maxerrs> is reached.  Default: '1'.
+
+--runopts <runopts>::
+Additional options to pass to the simulator (vsim).
+
+=== Compile and Run Options
+
+The following options must be present at both compile time and runtime to be
+effective.
+
+--coverage::
+Enable coverage collection to `<resdir>/coverstore`.  The coverstore format
+must be manually converted to a UCDB for analysis.  E.g. `vcover merge -out
+<resdir>/coverage.ucdb <resdir>/coverstore`
+
+--dump::
+Enable waveform dumping to `<resdir>/waves.wlf`.
+
+--visualizer::
+Enable waveform dumping using Mentor Visualizer to `<resdir>/qwave.db`.
+Recommended over the `--dump` option.  See VISUALIZER OPTIONS for
+additional customization options.
++
+Combine with the `--gui` option to run Visualizer interactively.
+
+=== Visualizer Options
+
+The following options only take effect when the `--visualizer` option is
+present.
+
+\+qwavedb_dump_start+<start_time>::
+Starts dumping waveforms at a specified simulation time.  Example:
+'+qwavedb_dump_start+1024ns'
+
+\+qwavedb_dump_stop+<stop_time>::
+Stop dumping waveforms at a specified simulation time.  Example:
+'+qwavedb_dump_stop+2048ns'
+
+== Files
+
+`$J5_COMMON/scripts/Rakefile`::
+The Rakefile used by `jfsim`.  Defines the compile, run, and clean targets.
+
+`<unit>/verif/obj/default/hdl/verilog_compile.log`::
+The Verilog compilation log.
+
+`<unit>/verif/obj/default/hdl/vhdl_compile.log`::
+The VHDL compilation log.
+
+`<unit>/verif/results/<resdir>/sim.log`::
+The simulation log file.  Look here for simulation errors.
+
+`<unit>/verif/results/<resdir>/waves.wlf`::
+The waveforms created when simulation is run with the `--dump` option.
+
+`<unit>/verif/results/<resdir>/qwave.db`::
+The waveforms created when simulation is run with the `--visualizer`
+option.
+
+`<unit>/verif/results/<resdir>/coverage.ucdb`::
+The coverage database created when simulation is run with the `--coverage`
+option.
+
+== Exit Status
+
+The exit status is non-zero (error) if any of the Rake tasks fail.
+
+NOTE: Mentor tools are not good about returning a useful exit status by default.
+jfsim addresses this by parsing the output of Mentor commands for error strings.
+If any of the error strings jfsim looks for are found, the corresponding Rake tasks will fail and cause jfsim to return a non-zero exit status.
+The error string search functionality is implemented by the `$J5_COMMON/scripts/mentor_questa_vsim_status` script.
+See the documentation in this script for handling non-standard error strings.
+
+The exit status is zero (success) if all of the Rake task pass.
+
+== Invocation Examples
+
+=== Basic Invocation Examples
+
+Compile and run a simulation:
+
+ jfsim --unit hk --test hk_bringup_test
+
+Run a simulation (w/o re-compile):
+
+ jfsim --unit hk --test hk_bringup_test --run
+
+Run a simulation w/ a non-zero seed and view the log:
+
+ jfsim --unit hk --test hk_bringup_test --seed 0xa4f0_c8d0
+ view $SBOX/hk/verif/results/default/sim.log
+
+Run a simulation w/ a non-default results directory and view the log:
+
+ jfsim --unit hk --test --resdir bug
+ view $SBOX/hk/verif/results/bug/sim.log
+
+=== Waveform Examples
+
+==== Legacy Waveform Examples
+
+Run a simulation w/ waveform dumping enabled and view the waves:
+
+ jfsim --unit hk --test hk_bringup_test --dump
+ vsim -view $SBOX/hk/verif/results/default/waves.wlf
+
+Dump memories by removing the "Memory" entry from the "WildcardFilter":
+
+ jfsim --unit <unit> --test <test> \
+   --runopts='-do "set WildcardFilter [lsearch -not -all -inline \$WildcardFilter Memory];"' \
+   --dump
+
+NOTE: The '$' must be escaped otherwise the shell will try to interpolate it upon invocation of vsim.
+
+Dump larger (all) memories via the 'WildcardFilterThreshold' variable:
+
+ jfsim --unit <unit> --test <test> \
+   --runopts='-do "set WildcardSizeThreshold 0; set WildcardFilter [lsearch -not -all -inline \$WildcardFilter Memory];"' \
+   --dump
+
+==== Visualizer Waveform Examples
+
+Run a simulation w/ Visualizer waveform dumping enabled and view the waves:
+
+ jfsim --unit hk --test hk_bringup_test --visualizer
+ vis -designfile $SBOX/hk/verif/results/default/design.bin \
+   -wavefile $SBOX/hk/verif/results/default/qwave.db
+
+Run a simulation w/ Visualizer transaction debug:
+
+ jfsim --unit hk --test hk_bringup_test --visualizer \
+   --runopts '-qwavedb=+signal+transaction+class -classdebug' --optopt '-debug'
+
+Run a simulation w/ Visualizer memory dumping:
+
+ jfsim --unit eio --test eio_reg_test --visualizer  \
+   --runopts='-qwavedb=+memory=1024'
+
+=== Coverage Example
+
+Run a simulation w/ coverage collection enabled and view the results:
+
+ jfsim --unit hk --test hk_bringup_test --coverage
+ cd $SBOX/hk/verif/results/default
+ vcover merge -out coverage.ucdb coverstore
+ vcover report -html coverage.ucdb
+ firefox covhtmlreport/index.html
+
+=== Gate Simulation Examples
+
+Min timing with `do` file that disables timing checks on synchronizers:
+
+  jfsim -u hk -t hk_reg_test --gate \
+    --netlist $NETLIST_PATH/hk_ba.v \
+    --optopts "-sdfmin /tb/hk=$NETLIST_PATH/hk_ba.sdf" \
+    --runopts "-do $HK/scripts/gate.do" \
+    +define+HK_SB_GIT_ID=0493649a
+
+Max timing with additional `vopt` and `vsim` options:
+
+  jfsim -u vp -t vp_base_test --gate \
+    --netlist $NETLIST_PATH/VP/vp.v \
+    --optopts "-L simprims_ver -sdfmax /tb/uut_=$NETLIST_PATH/VP/vp.sdf" \
+    --runopts "-do $SBOX/vp/scripts/gate.do +no_notifier"
+
+== Customization
+
+The simulation compile, optimization, and run steps may be customized via an
+optional `<unit>/unit.rake` file where `<unit>` is the path to the unit.  The
+`<unit>/unit.rake` file can be used to customize anything inside of
+`$J5_COMMON/scripts/Rakefile`.
+
+== Customization Examples
+
+The following are examples of customizations possible via a `<unit>/unit.rake`
+file.
+
+* Add default options to the optimizer
++
+[source,ruby]
+----
+options.optopt += " -L unisims_ver -L xilinxcorelib_ver glbl"
+----
+
+* Limit code coverage to DUT module (i.e. ignore verification code)
++
+[source,ruby]
+----
+options.coverage_optopts = "+cover+mymodule."
+----
+
+* Use another unit's knobs
++
+[source,ruby]
+----
+options.knobs_incpath << File.join(ENV['SBOX'], 'other-unit/verif/knobs')
+----
+
+* Change top module name
++
+[source,ruby]
+----
+options.top_module = 'top'
+----
+
+* Multiple top modules
++
+[source,ruby]
+----
+options.top_module = 'tb glbl'
+----
+
+* Disable SystemVerilog features and keywords
++
+[source,ruby]
+----
+options.compopt_verilog_default.gsub!(/-sv\b/, '')
+----
+
+* Do something before the compile task is run
++
+[source,ruby]
+----
+task :pre_compile do
+  puts "Do something before compile"
+  sh "something"
+end
+
+task :compile => :pre_compile
+----
+
+* Do something after the compile task is run
++
+[source,ruby]
+----
+Rake::Task['compile'].enhance do
+  puts "Doing something after compile"
+  sh "something"
+end
+----
+
+* Use pre-compiled libraries
++
+This example adds the "secure_ip" library to simulation.
+The "secure_ip" library is located in a directory specified by the `$SECUREIP_HOME` environment variable.
++
+NOTE: The modelsim.ini file in the `$MODELSIM` environment variable is copied locally on build.
+The path to the copy is stored in `files.modelsimini`.
+The `-modelsimini` option must be specified for all Questa commands to use this copy.
++
+[source,ruby]
+----
+# Define a new task called :vmap
+task :vmap do
+  sh "vmap -modelsimini #{files.modelsimini} secure_ip #{ENV["SECUREIP_HOME"]}"
+end
+
+# Add :vmap dependency to the :optimize task
+task :optimize => :vmap
+
+# Pass the library to the optimizer
+options.optopt += " -L secure_ip"
+----

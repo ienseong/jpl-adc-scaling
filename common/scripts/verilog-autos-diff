@@ -1,0 +1,21 @@
+#!/bin/sh
+
+tmpfile="$(mktemp /tmp/verilog-autos-diff.XXXXXXX)"
+
+emacs --batch --no-init-file \
+    --eval '(setq-default indent-tabs-mode nil)' \
+    --load $J5_COMMON/scripts/import/verilog-mode/verilog-mode.el \
+    $* \
+    --funcall verilog-batch-diff-auto 2>&1 |
+    perl -pe 's/^%Warning: |^%Error: /ERROR: /' |
+    perl -pe 's/Difference in AUTO expansion found$/Verilog AUTOs are out-of-sync.  Run `verilog-autos` to resolve./' |
+    tee $tmpfile
+
+grep '^ERROR: ' $tmpfile 1>/dev/null
+grep_exit_code="$?"
+
+rm $tmpfile
+
+if test "$grep_exit_code" == "0"; then
+    exit 1
+fi

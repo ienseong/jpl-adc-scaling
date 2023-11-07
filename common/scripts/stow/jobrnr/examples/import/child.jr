@@ -1,0 +1,16 @@
+import "grandchild", "grandchild.jr"
+
+job :compile, [:grandchild_compile] do
+  execute "echo avs --unit child --compile"
+end
+
+job :run_basic, :compile do
+  execute "echo avs --unit child --run --test child_basic_test"
+end
+
+job :run_random, :compile do
+  execute "echo avs --unit child --run --test child_random_test"
+  repeat 10
+end
+
+# vim: ft=ruby

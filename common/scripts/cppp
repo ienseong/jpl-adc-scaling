@@ -1,0 +1,106 @@
+#!/usr/bin/env ruby
+
+# NAME
+#
+#     cppp - C prepreprocessor
+#
+# SYNOPSIS
+#
+#     cppp <file(s)>
+#
+# DESCRIPTION
+#
+#     Expands #include statements like the C preprocessor but supports
+#     environment variables in #include paths.
+#
+# LIMITATIONS
+#
+#     Include paths (-I) are not supported.  All #includes must expand to
+#     absolute paths.
+#
+# AUTHOR
+#
+#     Rob Donnelly <robert.donnelly@jpl.nasa.gov>
+#
+# CREATED
+#
+#     2015-10-12
+
+SCRIPT_NAME = File.basename($0)
+
+COLOR_RED = "\e[91m"
+COLOR_END = "\e[0m"
+
+INSERT_LINE_MARKERS = false
+INSERT_LINE_DIRECTIVES = true
+
+def main
+  # current file handle
+  file = STDIN
+
+  expand(ARGF)
+end
+
+def expand(file)
+  # stack of file handles
+  # push current file handle on #include
+  # pop file handle on eof
+  files = []
+
+  while true
+    # pop up to includer or exit on eof
+    while file.eof?
+      if files.size > 0
+        file = files.pop
+        insert_line_marker(file.lineno, get_path(file), 2)
+      else
+        # see if there are more files in ARGF
+        if file.filename != file.skip.filename
+          file.lineno = 0
+        else
+          # end of root file, done
+          return 0
+        end
+      end
+    end
+
+    line = file.gets
+    insert_line_marker(1, get_path(file), 1) if file.lineno == 1
+
+    if matchdata = line.match(/^\s*#include "(.*?)"/)
+      path = expand_envars(matchdata[1])
+
+      files.push(file)
+      begin
+        file = File.open(path, "r")
+      rescue
+          $stderr.puts "#{COLOR_RED}ERROR:#{COLOR_END} #{SCRIPT_NAME}: cannot open '#{path}' at #{get_path(file)}:#{file.lineno}"
+        exit 1
+      end
+    else
+      puts line
+    end
+  end
+end
+
+def insert_line_marker(line, file, flags)
+  puts "# #{line} \"#{file}\" #{flags}" if INSERT_LINE_MARKERS
+  puts "#line #{line} \"#{file}\"" if INSERT_LINE_DIRECTIVES
+end
+
+def get_path(file)
+  if file.path == "-"
+    "<stdin>"
+  else
+    file.path
+  end
+end
+
+# expand environment variables in string
+# supports '${name}' and '$name' syntax
+# supports multiple environment variables in single string
+def expand_envars(path)
+  path.gsub(/\$\{?(\w+)\}?/) {ENV[$1]}
+end
+
+exit main

@@ -1,0 +1,14 @@
+job :compile do
+  execute "echo avs --unit child/grandchild --compile"
+end
+
+job :run_basic, :compile do
+  execute "echo avs --unit child/grandchild --run --test grandchild_basic_test"
+end
+
+job :run_random, :compile do
+  execute "echo avs --unit child/grandchild --run --test grandchild_random_test"
+  repeat 10
+end
+
+# vim: ft=ruby

@@ -1,0 +1,10 @@
+[package]
+name = "jfdpi"
+version = "0.1.0"
+authors = ["Rob Donnelly <Robert.Donnelly@jpl.nasa.gov>"]
+
+[lib]
+name = "jfdpi"
+crate-type = ["cdylib"]
+
+[dependencies]

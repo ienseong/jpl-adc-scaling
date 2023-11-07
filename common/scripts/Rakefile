@@ -1,0 +1,370 @@
+# Overview
+# ========
+#
+# This Rakefile is used by jfsim to compile and simulate HDL designs that
+# follow a common structure.
+#
+# Common Structure
+# ================
+#
+# The minimum required structure is as follows:
+#
+# * The entry point is the <unit>/verif/hdl/testbench/tb.f filelist
+# * The top level module must be named 'tb'
+#
+# Features
+# ========
+#
+# * Waveform dumping option
+# * Knobs
+# * Mixed language support (Verilog + VHDL)
+# * Supports a compile-once run-many methodology
+# * Hooks for customization
+# * Modelsim.ini isolation
+#
+# Invocation
+# ==========
+#
+# Invocation is normally done via jfsim but is documented here for
+# completeness.
+#
+# Usage:
+#
+#     cd <unit>/verif/results/<resdir>
+#     rake -f $SBOX/common/scripts/Rakefile UNIT=<abs-path-to-unit-root> [<OPTIONS>] <tasks>
+#
+# Compile Example:
+#
+#     mkdir -p $SBOX/mydesign/verif/results/default
+#     cd $SBOX/mydesign/verif/results/default
+#     rake -f $SBOX/common/scripts/Rakefile UNIT=$SBOX/mydesign compile
+#
+# Run Example:
+#
+#     cd <unit>/verif/results/default
+#     rake -f $SBOX/common/scripts/Rakefile UNIT=$SBOX/mydesign TEST=myuvmtest sim
+#
+# Compile and Run Example:
+#
+#     mkdir -p $SBOX/mydesign/verif/results/default
+#     cd $SBOX/mydesign/verif/results/default
+#     rake -f $SBOX/common/scripts/Rakefile UNIT=$SBOX/mydesign TEST=myuvmtest compile sim
+
+require_relative 'stow/jfsim/lib/jfsim-rake'
+
+################################################################################
+# Utilies
+
+class Hash
+  def to_struct
+    Struct.new(*self.keys).new(*self.values)
+  end
+end
+
+# Utilies
+################################################################################
+# Friendly aliases
+
+def options
+  OPTIONS
+end
+
+def directories
+  DIRS
+end
+
+def files
+  FILES
+end
+
+# Friendly aliases
+################################################################################
+# Options
+
+OPTIONS = {
+  # Must be specified on the command line
+  unit: ENV['UNIT'],
+  test: ENV['TEST'],
+
+  # Optionally specified on the command line
+  compopt_verilog: ENV['COMPOPT'] || '',
+  compopt_verilog_default: '-sv',
+  compopt_vhdl: ENV['VHDLOPT'] || '',
+  optopt: ENV['OPTOPT'] || '',
+  runopt: ENV['RUNOPT'] || '',
+
+  # Optionally specified on the command line
+  c_defines: ENV['C_DEFINES'] || '',
+  interactive: ENV['INTERACTIVE'] == 'true',
+  gui: ENV['GUI'] == 'true',
+  dump: ENV['DUMP'] == 'true',
+  visualizer: ENV['VISUALIZER'] == 'true',
+  coverage: ENV['COVERAGE'] == 'true',
+  objdir: ENV['OBJDIR'] || 'default',
+
+  # Optionally added to or overriden via Rakefile.unit
+  knobs_incpath: [File.join(ENV['UNIT'], 'verif/knobs')],
+  coverage_optopts: '+cover',
+
+  top_module: ENV['TOP_MODULE'] || 'tb'
+}.to_struct
+
+# Options
+################################################################################
+# Directories and Files
+
+DIRS = {
+  unit_objdir_root: File.join(options.unit, 'verif/obj'),
+  unit_resdir_root: File.join(options.unit, 'verif/results'),
+  unit_tb: File.join(options.unit, 'verif/testbench'),
+  unit_objdir: '',
+  unit_hdl_objdir: '',
+  unit_dpi_objdir: '',
+}.to_struct
+directories.unit_objdir = File.join(directories.unit_objdir_root, options.objdir)
+directories.unit_hdl_objdir = File.join(directories.unit_objdir, 'hdl')
+directories.unit_dpi_objdir = File.join(directories.unit_objdir, 'dpi')
+
+FILES = {
+  vlog_options: File.join(ENV['J5_COMMON'], 'scripts/vlog_options.f'),
+  vopt_options: File.join(ENV['J5_COMMON'], 'scripts/vopt_options.f'),
+  vsim_options: File.join(ENV['J5_COMMON'], 'scripts/vsim_options.f'),
+
+  modelsimini: File.join(directories.unit_objdir, 'modelsim.ini'),
+  filelist_top: File.join(directories.unit_tb, 'tb.f'),
+  filelist_all: File.join(directories.unit_objdir, 'all.f'),
+  filelist_verilog: File.join(directories.unit_objdir, 'verilog.f'),
+  filelist_vhdl: File.join(directories.unit_objdir, 'vhdl.f'),
+
+  compile_log_verilog: File.join(directories.unit_hdl_objdir, 'verilog_compile.log'),
+  compile_log_vhdl: File.join(directories.unit_hdl_objdir, 'vhdl_compile.log'),
+  optimization_log: File.join(directories.unit_hdl_objdir, 'optimization.log'),
+  simulation_log: 'sim.log',
+  simulation_waves: 'waves.wlf',
+}.to_struct
+
+# Directories and Files
+################################################################################
+# Unit Rakefile
+#
+# Allows units to override OPTIONS hash values as well as enhance tasks by
+# creating an optional <unit>/unit.rake.
+#
+# WARNING: Use this feature with care, the Rakefile internals are undocumented
+# and may change.  Ideally this functionality would be provided by a well
+# defined static API.  Instead we let you add arbitrary code to do whatever you
+# want even shoot yourself in the foot.
+
+unit_rakefile = "#{ENV['UNIT']}/unit.rake"
+import unit_rakefile if File.exists?(unit_rakefile)
+
+# Unit Rakefile
+################################################################################
+# Filelists
+
+directory directories.unit_objdir
+
+# Expand #includes and #defines of top level filelist
+#
+# NOTE: This is a plain old task instead of a file task.  Want to generate a
+# new one every time since defines and includes may change the contents.
+task files.filelist_all => [files.filelist_top, directories.unit_objdir] do
+  sh "flpp #{options.c_defines} #{files.filelist_top} > #{files.filelist_all}"
+end
+
+file files.filelist_verilog => files.filelist_all do
+  sh "grep --invert-match --ignore-case '\.vhd$' #{files.filelist_all} > #{files.filelist_verilog} || true"
+end
+
+file files.filelist_vhdl => files.filelist_all do
+  sh "grep --ignore-case '\.vhd$' #{files.filelist_all} > #{files.filelist_vhdl} || true"
+end
+
+# Filelists
+################################################################################
+# Compile
+
+file directories.unit_hdl_objdir => directories.unit_objdir do
+  sh "vlib #{directories.unit_hdl_objdir}"
+end
+
+task :check_lock => directories.unit_hdl_objdir do
+  check_lockfile
+end
+
+# Copy shared modelsim.ini so we can make changes to it
+#
+# NOTE: This is a plain old task instead of a file task.  Don't want to "cache"
+# the modelsim.ini.  Copy from source every time.  This prevents caching issues
+# when changing $MODELSIM.
+task files.modelsimini => ENV['MODELSIM'] do
+  fail '$MODELSIM environment variable does not point to a valid modelsim.ini' unless File.exists?(ENV['MODELSIM'])
+
+  cp ENV['MODELSIM'], files.modelsimini
+  chmod "u+w", files.modelsimini
+  sh "vmap -modelsimini #{files.modelsimini} mtiUvm #{uvm_path}"
+end
+
+task :compile_vhdl => [:check_lock, files.modelsimini, files.filelist_vhdl] do
+  unless File.size?(files.filelist_vhdl).nil?
+    begin
+      sh "vcom -modelsimini #{files.modelsimini} -quiet -work #{directories.unit_hdl_objdir} -l #{files.compile_log_vhdl} #{options.compopt_vhdl} -f #{files.filelist_vhdl} | mentor_questa_vsim_status"
+    rescue StandardError => e
+      report_first_compile_errors(files.compile_log_vhdl)
+      raise e
+    end
+  end
+end
+
+task :compile_verilog => [:compile_vhdl, files.filelist_verilog] do
+  unless File.size?(files.filelist_verilog).nil?
+    begin
+      compopt = [options.compopt_verilog, options.compopt_verilog_default].reject(&:empty?).join(' ')
+      sh "vlog -modelsimini #{files.modelsimini} -quiet -work #{directories.unit_hdl_objdir} -l #{files.compile_log_verilog} -f #{files.vlog_options} #{compopt} -f #{files.filelist_verilog} -vopt | mentor_questa_vsim_status"
+    rescue StandardError => e
+      report_first_compile_errors(files.compile_log_verilog)
+      raise e
+    end
+  end
+end
+
+task :optimize => :compile_verilog do
+  optopt = []
+  optopt << options.optopt
+  optopt << options.coverage_optopts if options.coverage
+  optopt << "+acc" if options.dump
+  if options.visualizer
+    if options.gui
+      optopt << "-debug,livesim"
+    else
+      optopt << "-debug"
+    end
+    optopt << "-designfile design.bin"
+  end
+
+  # * optimize on compile so that we don't waste cycles on optimization when doing compile-once run-many
+  sh "vopt -modelsimini #{files.modelsimini} -quiet -work #{directories.unit_hdl_objdir} -l #{files.optimization_log} -f #{files.vopt_options} #{optopt.join(' ')} #{options.top_module} -o tb_opt | mentor_questa_vsim_status"
+end
+
+task :compile_dpi do
+  # Use nobrew to compile without Linuxbrew gcc.  When compiled with Linuxbrew
+  # gcc, the library is linked to the Linuxbrew glibc.  Questa runs with the
+  # system glibc which is not compatible with the glibc that the library will
+  # be linked with.
+  sh "CARGO_TARGET_DIR=#{directories.unit_dpi_objdir} nobrew cargo build --manifest-path #{ENV['J5_COMMON']}/verif/dpi/Cargo.toml --release"
+end
+
+multitask :compile => [:optimize, :compile_dpi]
+
+# Compile
+################################################################################
+# Simulate
+
+task :sim => :clean_coverage do
+  libjfdpi_path = File.join(directories.unit_dpi_objdir, 'release/libjfdpi')
+
+  rundo = []
+  top_modules = options.top_module.split(/\s+/).map { |top_module| "/#{top_module}/*" }.join(' ')
+  rundo << "log -depth 100 -r #{top_modules};" if options.dump
+
+  rundo << 'run -all; quit -force;' unless options.interactive || options.gui
+
+  runopt = []
+  runopt << options.runopt
+  runopt <<
+    if options.gui && options.visualizer
+      "-visualizer=design.bin"
+    elsif options.gui
+      "-gui"
+    elsif options.interactive
+      "-c"
+    else
+      "-batch"
+    end
+  runopt << "-wlf #{files.simulation_waves}" if options.dump
+  runopt << "-coverage" if options.coverage
+  runopt << "-coverstore coverstore" if options.coverage
+  runopt << "-qwavedb=+signal" if options.visualizer
+
+  output_redirect =
+    if options.interactive || options.gui
+      ""
+    else
+      "| mentor_questa_vsim_status --detect-incomplete"
+    end
+
+  sh "KNOBS_INCPATH=#{options.knobs_incpath.join(':')} vsim -modelsimini #{files.modelsimini} -mvchome '#{ENV["QUESTA_MVC_HOME"]}' -quiet -lib #{directories.unit_hdl_objdir} -l #{files.simulation_log} -f #{files.vsim_options} tb_opt +UVM_TESTNAME=#{options.test} -sv_lib #{libknobs_path} -sv_lib #{libjfdpi_path} #{runopt.join(' ')} -do '#{rundo.join(' ')}' #{output_redirect}"
+end
+
+# Simulate
+################################################################################
+# Clean
+
+task :clean_coverage do
+  coverstore_path = File.join(Dir.pwd, 'coverstore')
+  if options.coverage && Dir.exist?(coverstore_path)
+    rm_rf(coverstore_path)
+  end
+end
+
+task :clean_obj do
+  rm_rf directories.unit_objdir_root
+end
+
+task :clean_results do
+  rm_rf directories.unit_resdir_root
+end
+
+task :clean_all => [:clean_obj, :clean_results]
+
+# Clean
+################################################################################
+# Helper Methods
+
+def report_first_compile_errors(log_file)
+  puts
+  puts "First few errors from compile log: #{log_file}"
+  sh "grep Error #{log_file} --max-count 2 --after-context 10 | mentor_questa_vsim_status"
+end
+
+def check_lockfile
+  lockfile = File.join(directories.unit_hdl_objdir, '_lock')
+
+  if File.exists?(lockfile)
+    fail "ERROR: Cannot proceed with Questa compile due to presence of '#{lockfile}'.\n" +
+         "       Another compile is running or has been terminated unexpectedly.\n" +
+         "       Run 'rm #{lockfile}' to proceed."
+  end
+end
+
+def libknobs_path
+  path = File.join(ENV['KNOBS_HOME'], 'lib/libknobs')
+
+  fail "KNOBS_HOME environment variable is undefined" unless ENV.key?('KNOBS_HOME')
+  fail "#{path}.so does not exist" unless File.exists?("#{path}.so")
+
+  path
+end
+
+def uvm_path
+  key = 'UVM_HOME'
+  path = ENV[key]
+
+  # DEPRECATED: Deriving the path to UVM has been deprecated in favor of
+  # explicitly defining it via the $UVM_HOME environment variable.  Remove
+  # block of code in future.
+  puts "WARNING: The $UVM_HOME environment variable is not defined." +
+    " Deriving it.  Reload your environment to make this warning go away." unless ENV.has_key?(key)
+  ENV[key] = File.join(ENV['QUESTA_ROOT'], 'uvm-1.2')
+  path = ENV[key]
+
+  fail "The $UVM_HOME environment variable is not defined.  Have you sourced" +
+    " $SBOX/config/proj.setup.*?" unless ENV.has_key?(key)
+  fail "The value of the $UVM_HOME environment variable is a path that does not" +
+    " exist" unless Dir.exists?(path)
+
+  path
+end
+
+# Helper Methods
+################################################################################

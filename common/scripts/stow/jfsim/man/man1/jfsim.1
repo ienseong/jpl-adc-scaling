@@ -1,0 +1,706 @@
+'\" t
+.\"     Title: jfsim
+.\"    Author: Rob Donnelly <robert.donnelly@jpl.nasa.gov>
+.\" Generator: Asciidoctor 2.0.16
+.\"      Date: 2021-12-21
+.\"    Manual: J5 Manual
+.\"    Source: fpga-common master
+.\"  Language: English
+.\"
+.TH "JFSIM" "1" "2021-12-21" "fpga\-common master" "J5 Manual"
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.ss \n[.ss] 0
+.nh
+.ad l
+.de URL
+\fI\\$2\fP <\\$1>\\$3
+..
+.als MTO URL
+.if \n[.g] \{\
+.  mso www.tmac
+.  am URL
+.    ad l
+.  .
+.  am MTO
+.    ad l
+.  .
+.  LINKSTYLE blue R < >
+.\}
+.SH "NAME"
+jfsim \- Frontend for HDL simulation
+.SH "SYNOPSIS"
+.sp
+.nf
+\fIjfsim\fP [OPTIONS] [PLUSARGS]
+
+\fIjfsim\fP \-\-clean [OPTIONS] [PLUSARGS]
+\fIjfsim\fP \-\-compile [OPTIONS] [PLUSARGS]
+\fIjfsim\fP \-\-run [OPTIONS] [PLUSARGS]
+\fIjfsim\fP \-\-rerun <resdir>
+.fi
+.br
+.SH "DESCRIPTION"
+.sp
+The jfsim script is a frontend for HDL simulation that targets Mentor Questa.
+.SH "OPTIONS"
+.SS "General Options"
+.sp
+\-n, \-\-dry\-run
+.RS 4
+Display the Rake command without running it.
+.RE
+.sp
+\-u, \-\-unit <unit>
+.RS 4
+Path to unit.  Path can be relative to $SBOX or absolute.  Default: inferred
+using \f(CRpwd\fP.
+.RE
+.sp
+\-\-resdir <resdir>
+.RS 4
+Path to results directory.  Path can be relative to `<unit>/verif/results.
+Default: \*(Aqdefault\*(Aq.
+.RE
+.sp
+\-\-[no\-]lsf
+.RS 4
+(EXPERIMENTAL) Enable or disable LSF submission.  Default: disabled.
+.RE
+.sp
+\-\-host <host>
+.RS 4
+(EXPERIMENTAL) The host to run on.  Default: \*(Aqlocalhost\*(Aq.
+.RE
+.sp
+\-\-rerun <resdir>
+.RS 4
+(EXPERIMENTAL) Rerun a previous simulation.
+.RE
+.SS "Targets"
+.sp
+The default target is \*(Aq\-\-compile \-\-run\*(Aq if none is specified.
+.sp
+\-\-compile
+.RS 4
+Create simulation binary.
+.RE
+.sp
+\-\-run
+.RS 4
+Run simulation binary.
+.RE
+.sp
+\-\-clean [<clean\-target>]
+.RS 4
+Clean one of: \*(Aqobj\*(Aq, \*(Aqresults\*(Aq, \*(Aqall\*(Aq.  Default: \*(Aqobj\*(Aq.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+obj \(em removes <unit>/verif/obj
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+results \(em removes <unit>/verif/results
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+all \(em removes <unit>/verif/obj and <unit>/verif/results
+.RE
+.RE
+.SS "Compile Options"
+.sp
+The following options are only applicable for the \f(CR\-\-compile\fP target.
+.sp
+\-\-gate
+.RS 4
+Compile for gate simulation.  Defines \f(CRGATE\fP.
+.RE
+.sp
+\-\-netlist <netlist\-path>
+.RS 4
+Path to netlist for use with \f(CR\-\-gate\fP.  Defines \f(CRNETLIST\fP=<netlist\-path>.
+.RE
+.sp
+\-\-compopts <compopts>
+.RS 4
+Additional options to pass to the SystemVerilog compiler (vlog).
+.RE
+.sp
+\-\-vhdlopts <vhdlopts>
+.RS 4
+Additional options to pass to the VHDL compiler (vcom).
+.RE
+.sp
+\-\-objdir <objdir>
+.RS 4
+Object directory.  Useful when creating multiple concurrent simulation
+images.  Path must be relative to \f(CR<unit>/verif/obj\fP.  Default: \*(Aqdefault\*(Aq.
+.RE
+.sp
+\-\-optopts <optopts>
+.RS 4
+Additional options to pass to the optimizer (vopt).
+.RE
+.sp
+\-\-top\-module <module>
+.RS 4
+The top module(s) of the testbench.  Multiple top modules may be specified
+as a quoted space\-delimited string.  Default: \*(Aqtb\*(Aq.
+.RE
+.SS "Run Options"
+.sp
+The following options are only applicable for the \f(CR\-\-run\fP target.
+.sp
+\-t, \-\-test <test\-name>
+.RS 4
+The test to run.  Passes \f(CR+UVM_TESTNAME=<test\-name>\fP.
+.RE
+.sp
+\-i, \-\-interactive
+.RS 4
+Run the simulator via interactive CLI.  Loads the simulator but does not
+start the simulation.  This allows the setting of breakpoints before
+starting the simulation.
+.RE
+.sp
+\-g, \-\-gui
+.RS 4
+Run the simulator via interactive GUI.  Loads the simulator but does not start
+the simulation.  This allows the setting of breakpoints before starting the
+simulation.
+.sp
+This uses the legacy GUI by default.  Combine with the \f(CR\-\-visualizer\fP option
+to use Visualizer instead.
+.RE
+.sp
+\-\-seed <seed>
+.RS 4
+Set all seeds for randomization.  Valid values: <decimal\-value>,
+<hexadecimal\-value>, \*(Aqrandom\*(Aq. Default: \*(Aq0\*(Aq.
+.RE
+.sp
+\-\-maxerrs <maxerrs>
+.RS 4
+Terminate simulation when <maxerrs> is reached.  Default: \*(Aq1\*(Aq.
+.RE
+.sp
+\-\-runopts <runopts>
+.RS 4
+Additional options to pass to the simulator (vsim).
+.RE
+.SS "Compile and Run Options"
+.sp
+The following options must be present at both compile time and runtime to be
+effective.
+.sp
+\-\-coverage
+.RS 4
+Enable coverage collection to \f(CR<resdir>/coverstore\fP.  The coverstore format
+must be manually converted to a UCDB for analysis.  E.g. \f(CRvcover merge \-out
+<resdir>/coverage.ucdb <resdir>/coverstore\fP
+.RE
+.sp
+\-\-dump
+.RS 4
+Enable waveform dumping to \f(CR<resdir>/waves.wlf\fP.
+.RE
+.sp
+\-\-visualizer
+.RS 4
+Enable waveform dumping using Mentor Visualizer to \f(CR<resdir>/qwave.db\fP.
+Recommended over the \f(CR\-\-dump\fP option.  See VISUALIZER OPTIONS for
+additional customization options.
+.sp
+Combine with the \f(CR\-\-gui\fP option to run Visualizer interactively.
+.RE
+.SS "Visualizer Options"
+.sp
+The following options only take effect when the \f(CR\-\-visualizer\fP option is
+present.
+.sp
++qwavedb_dump_start+<start_time>
+.RS 4
+Starts dumping waveforms at a specified simulation time.  Example:
+\*(Aq+qwavedb_dump_start+1024ns\*(Aq
+.RE
+.sp
++qwavedb_dump_stop+<stop_time>
+.RS 4
+Stop dumping waveforms at a specified simulation time.  Example:
+\*(Aq+qwavedb_dump_stop+2048ns\*(Aq
+.RE
+.SH "FILES"
+.sp
+\f(CR$J5_COMMON/scripts/Rakefile\fP
+.RS 4
+The Rakefile used by \f(CRjfsim\fP.  Defines the compile, run, and clean targets.
+.RE
+.sp
+\f(CR<unit>/verif/obj/default/hdl/verilog_compile.log\fP
+.RS 4
+The Verilog compilation log.
+.RE
+.sp
+\f(CR<unit>/verif/obj/default/hdl/vhdl_compile.log\fP
+.RS 4
+The VHDL compilation log.
+.RE
+.sp
+\f(CR<unit>/verif/results/<resdir>/sim.log\fP
+.RS 4
+The simulation log file.  Look here for simulation errors.
+.RE
+.sp
+\f(CR<unit>/verif/results/<resdir>/waves.wlf\fP
+.RS 4
+The waveforms created when simulation is run with the \f(CR\-\-dump\fP option.
+.RE
+.sp
+\f(CR<unit>/verif/results/<resdir>/qwave.db\fP
+.RS 4
+The waveforms created when simulation is run with the \f(CR\-\-visualizer\fP
+option.
+.RE
+.sp
+\f(CR<unit>/verif/results/<resdir>/coverage.ucdb\fP
+.RS 4
+The coverage database created when simulation is run with the \f(CR\-\-coverage\fP
+option.
+.RE
+.SH "EXIT STATUS"
+.sp
+The exit status is non\-zero (error) if any of the Rake tasks fail.
+.if n .sp
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+.B Note
+.ps -1
+.br
+.sp
+Mentor tools are not good about returning a useful exit status by default.
+jfsim addresses this by parsing the output of Mentor commands for error strings.
+If any of the error strings jfsim looks for are found, the corresponding Rake tasks will fail and cause jfsim to return a non\-zero exit status.
+The error string search functionality is implemented by the \f(CR$J5_COMMON/scripts/mentor_questa_vsim_status\fP script.
+See the documentation in this script for handling non\-standard error strings.
+.sp .5v
+.RE
+.sp
+The exit status is zero (success) if all of the Rake task pass.
+.SH "INVOCATION EXAMPLES"
+.SS "Basic Invocation Examples"
+.sp
+Compile and run a simulation:
+.sp
+.if n .RS 4
+.nf
+.fam C
+jfsim \-\-unit hk \-\-test hk_bringup_test
+.fam
+.fi
+.if n .RE
+.sp
+Run a simulation (w/o re\-compile):
+.sp
+.if n .RS 4
+.nf
+.fam C
+jfsim \-\-unit hk \-\-test hk_bringup_test \-\-run
+.fam
+.fi
+.if n .RE
+.sp
+Run a simulation w/ a non\-zero seed and view the log:
+.sp
+.if n .RS 4
+.nf
+.fam C
+jfsim \-\-unit hk \-\-test hk_bringup_test \-\-seed 0xa4f0_c8d0
+view $SBOX/hk/verif/results/default/sim.log
+.fam
+.fi
+.if n .RE
+.sp
+Run a simulation w/ a non\-default results directory and view the log:
+.sp
+.if n .RS 4
+.nf
+.fam C
+jfsim \-\-unit hk \-\-test \-\-resdir bug
+view $SBOX/hk/verif/results/bug/sim.log
+.fam
+.fi
+.if n .RE
+.SS "Waveform Examples"
+.SS "Legacy Waveform Examples"
+.sp
+Run a simulation w/ waveform dumping enabled and view the waves:
+.sp
+.if n .RS 4
+.nf
+.fam C
+jfsim \-\-unit hk \-\-test hk_bringup_test \-\-dump
+vsim \-view $SBOX/hk/verif/results/default/waves.wlf
+.fam
+.fi
+.if n .RE
+.sp
+Dump memories by removing the "Memory" entry from the "WildcardFilter":
+.sp
+.if n .RS 4
+.nf
+.fam C
+jfsim \-\-unit <unit> \-\-test <test> \(rs
+  \-\-runopts=\*(Aq\-do "set WildcardFilter [lsearch \-not \-all \-inline \(rs$WildcardFilter Memory];"\*(Aq \(rs
+  \-\-dump
+.fam
+.fi
+.if n .RE
+.if n .sp
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+.B Note
+.ps -1
+.br
+.sp
+The \*(Aq$\*(Aq must be escaped otherwise the shell will try to interpolate it upon invocation of vsim.
+.sp .5v
+.RE
+.sp
+Dump larger (all) memories via the \*(AqWildcardFilterThreshold\*(Aq variable:
+.sp
+.if n .RS 4
+.nf
+.fam C
+jfsim \-\-unit <unit> \-\-test <test> \(rs
+  \-\-runopts=\*(Aq\-do "set WildcardSizeThreshold 0; set WildcardFilter [lsearch \-not \-all \-inline \(rs$WildcardFilter Memory];"\*(Aq \(rs
+  \-\-dump
+.fam
+.fi
+.if n .RE
+.SS "Visualizer Waveform Examples"
+.sp
+Run a simulation w/ Visualizer waveform dumping enabled and view the waves:
+.sp
+.if n .RS 4
+.nf
+.fam C
+jfsim \-\-unit hk \-\-test hk_bringup_test \-\-visualizer
+vis \-designfile $SBOX/hk/verif/results/default/design.bin \(rs
+  \-wavefile $SBOX/hk/verif/results/default/qwave.db
+.fam
+.fi
+.if n .RE
+.sp
+Run a simulation w/ Visualizer transaction debug:
+.sp
+.if n .RS 4
+.nf
+.fam C
+jfsim \-\-unit hk \-\-test hk_bringup_test \-\-visualizer \(rs
+  \-\-runopts \*(Aq\-qwavedb=+signal+transaction+class \-classdebug\*(Aq \-\-optopt \*(Aq\-debug\*(Aq
+.fam
+.fi
+.if n .RE
+.sp
+Run a simulation w/ Visualizer memory dumping:
+.sp
+.if n .RS 4
+.nf
+.fam C
+jfsim \-\-unit eio \-\-test eio_reg_test \-\-visualizer  \(rs
+  \-\-runopts=\*(Aq\-qwavedb=+memory=1024\*(Aq
+.fam
+.fi
+.if n .RE
+.SS "Coverage Example"
+.sp
+Run a simulation w/ coverage collection enabled and view the results:
+.sp
+.if n .RS 4
+.nf
+.fam C
+jfsim \-\-unit hk \-\-test hk_bringup_test \-\-coverage
+cd $SBOX/hk/verif/results/default
+vcover merge \-out coverage.ucdb coverstore
+vcover report \-html coverage.ucdb
+firefox covhtmlreport/index.html
+.fam
+.fi
+.if n .RE
+.SS "Gate Simulation Examples"
+.sp
+Min timing with \f(CRdo\fP file that disables timing checks on synchronizers:
+.sp
+.if n .RS 4
+.nf
+.fam C
+jfsim \-u hk \-t hk_reg_test \-\-gate \(rs
+  \-\-netlist $NETLIST_PATH/hk_ba.v \(rs
+  \-\-optopts "\-sdfmin /tb/hk=$NETLIST_PATH/hk_ba.sdf" \(rs
+  \-\-runopts "\-do $HK/scripts/gate.do" \(rs
+  +define+HK_SB_GIT_ID=0493649a
+.fam
+.fi
+.if n .RE
+.sp
+Max timing with additional \f(CRvopt\fP and \f(CRvsim\fP options:
+.sp
+.if n .RS 4
+.nf
+.fam C
+jfsim \-u vp \-t vp_base_test \-\-gate \(rs
+  \-\-netlist $NETLIST_PATH/VP/vp.v \(rs
+  \-\-optopts "\-L simprims_ver \-sdfmax /tb/uut_=$NETLIST_PATH/VP/vp.sdf" \(rs
+  \-\-runopts "\-do $SBOX/vp/scripts/gate.do +no_notifier"
+.fam
+.fi
+.if n .RE
+.SH "CUSTOMIZATION"
+.sp
+The simulation compile, optimization, and run steps may be customized via an
+optional \f(CR<unit>/unit.rake\fP file where \f(CR<unit>\fP is the path to the unit.  The
+\f(CR<unit>/unit.rake\fP file can be used to customize anything inside of
+\f(CR$J5_COMMON/scripts/Rakefile\fP.
+.SH "CUSTOMIZATION EXAMPLES"
+.sp
+The following are examples of customizations possible via a \f(CR<unit>/unit.rake\fP
+file.
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Add default options to the optimizer
+.sp
+.if n .RS 4
+.nf
+.fam C
+options.optopt += " \-L unisims_ver \-L xilinxcorelib_ver glbl"
+.fam
+.fi
+.if n .RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Limit code coverage to DUT module (i.e. ignore verification code)
+.sp
+.if n .RS 4
+.nf
+.fam C
+options.coverage_optopts = "+cover+mymodule."
+.fam
+.fi
+.if n .RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Use another unit\(cqs knobs
+.sp
+.if n .RS 4
+.nf
+.fam C
+options.knobs_incpath << File.join(ENV[\*(AqSBOX\*(Aq], \*(Aqother\-unit/verif/knobs\*(Aq)
+.fam
+.fi
+.if n .RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Change top module name
+.sp
+.if n .RS 4
+.nf
+.fam C
+options.top_module = \*(Aqtop\*(Aq
+.fam
+.fi
+.if n .RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Multiple top modules
+.sp
+.if n .RS 4
+.nf
+.fam C
+options.top_module = \*(Aqtb glbl\*(Aq
+.fam
+.fi
+.if n .RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Disable SystemVerilog features and keywords
+.sp
+.if n .RS 4
+.nf
+.fam C
+options.compopt_verilog_default.gsub!(/\-sv\(rsb/, \*(Aq\*(Aq)
+.fam
+.fi
+.if n .RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Do something before the compile task is run
+.sp
+.if n .RS 4
+.nf
+.fam C
+task :pre_compile do
+  puts "Do something before compile"
+  sh "something"
+end
+
+task :compile => :pre_compile
+.fam
+.fi
+.if n .RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Do something after the compile task is run
+.sp
+.if n .RS 4
+.nf
+.fam C
+Rake::Task[\*(Aqcompile\*(Aq].enhance do
+  puts "Doing something after compile"
+  sh "something"
+end
+.fam
+.fi
+.if n .RE
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.  sp -1
+.  IP \(bu 2.3
+.\}
+Use pre\-compiled libraries
+.sp
+This example adds the "secure_ip" library to simulation.
+The "secure_ip" library is located in a directory specified by the \f(CR$SECUREIP_HOME\fP environment variable.
+.if n .sp
+.RS 4
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+.B Note
+.ps -1
+.br
+.sp
+The modelsim.ini file in the \f(CR$MODELSIM\fP environment variable is copied locally on build.
+The path to the copy is stored in \f(CRfiles.modelsimini\fP.
+The \f(CR\-modelsimini\fP option must be specified for all Questa commands to use this copy.
+.sp .5v
+.RE
+.sp
+.if n .RS 4
+.nf
+.fam C
+# Define a new task called :vmap
+task :vmap do
+  sh "vmap \-modelsimini #{files.modelsimini} secure_ip #{ENV["SECUREIP_HOME"]}"
+end
+
+# Add :vmap dependency to the :optimize task
+task :optimize => :vmap
+
+# Pass the library to the optimizer
+options.optopt += " \-L secure_ip"
+.fam
+.fi
+.if n .RE
+.RE
+.SH "AUTHOR"
+.sp
+Rob Donnelly <robert.donnelly@jpl.nasa.gov>

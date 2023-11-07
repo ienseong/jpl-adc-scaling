@@ -1,0 +1,7 @@
+#!/bin/sh
+
+emacs --batch --no-init-file \
+    --eval '(setq-default indent-tabs-mode nil)' \
+    --load $J5_COMMON/scripts/import/verilog-mode/verilog-mode.el \
+    $* \
+    --funcall verilog-batch-auto

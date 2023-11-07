@@ -1,0 +1,11 @@
+AllCops:
+  TargetRubyVersion: 2.3
+  DisplayCopNames: true
+
+Metrics/LineLength:
+  Max: 120
+
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+Style/TrailingCommaInHashLiteral:
+  Enabled: false

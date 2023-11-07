@@ -1,0 +1,162 @@
+#!/usr/bin/env ruby
+
+# NAME
+#
+#     mentor_questa_vsim_status [--detect-incomplete]
+#
+# SYNOPSIS
+#
+#     (vlog|vopt|vsim) <options> | mentor_questa_vsim_status
+#
+# DESCRIPTION
+#
+#     Mentor Questa vsim does not exit with non-zero exit status on errors.
+#     This behavior is problematic since it lets the rake process proceed on
+#     errors.  This script is passes stdin to stdout while looking for errors.
+#     If errors are detected the status flag is set.  When input is finished,
+#     the script exits with the status flag.
+#
+#     The error patterns may be modified to meet the needs of your testbench by
+#     overriding and extending this script.  See EXTEND EXAMPLE.
+#
+# OPTIONS
+#
+#     --detect-incomplete
+#         Fail when completion pattern was not seen.
+#
+# EXTEND EXAMPLE
+#
+#     1. Create a file with the same name (i.e. 'mentor_questa_vsim_status')
+#     2. Make the file executable
+#     3. Prepend the path to the file to the $PATH environment variable
+#     4. Add the following code to the file and modify the COLOR_PATTERNS hash
+#        as desired
+#
+#        #!/usr/bin/env ruby
+#
+#        load File.join(ENV['SBOX'], *%w(common scripts mentor_questa_vsim_status))
+#
+#        COLOR_PATTERNS.merge!({
+#          /(ERROR:)/ => :error,
+#        })
+#
+#        exit main
+
+COLORS = {
+  :error => 91,   # red
+  :warning => 93, # yellow
+}
+
+COLOR_PATTERNS = {
+  # Mentor Questa
+  /(^(?:# )?(\*\* )?Error\b)/ => :error,
+  /(^(?:# )?\*\* Fatal:)/ => :error,
+  /(^(?:# )?\*\* Failure:)/ => :error,
+  /(^(?:# )?\*\* Warning:)/ => :warning,
+
+  # UVM
+  /(^# UVM_ERROR )([^:])/ => :error,
+  /(^# UVM_FATAL )([^:])/ => :error,
+  /(^# UVM_WARNING )([^:])/ => :warning,
+
+  # J5
+  /(^# ERROR[:+|]\d+:)/ => :error,
+  /(^# FATAL[:+|]:)/ => :error,
+  /(^# WARNING[:+|]\d+:)/ => :warning,
+}
+
+COMPLETION_PATTERN = /^(# |)End time: .* on .* Elapsed time:/
+
+def color_enabled?
+  @color_enabled ||= $stdout.tty?
+end
+
+def colorize(color, text)
+  "\e[#{color}m#{text}\e[0m"
+end
+
+# Returns the tuple [colorize_line, line_type]
+#
+# * colorize_line - boolean indicating whether the line should be colored
+# * line_type - one of :info, :error, :warning
+def classify_line(line)
+  match = COLOR_PATTERNS.keys.find { |re| re.match(line) }
+  if match.nil?
+    [false, :info]
+  else
+    [true, COLOR_PATTERNS[match]]
+  end
+end
+
+def command_complete?(line)
+  line.match(COMPLETION_PATTERN)
+end
+
+def report_failure_to_complete
+  message = <<~EOF
+      ERROR: Command failed to complete
+      ERROR:
+      ERROR: Completion pattern not found in command output.
+      ERROR: Check 'dmesg' for killed jobs or check completion pattern.
+      ERROR: Completion pattern: '#{COMPLETION_PATTERN}'
+  EOF
+
+  if color_enabled?
+    message = colorize(COLORS[:error], message)
+  end
+
+  puts message
+end
+
+def main_with_exceptions
+  status = 0
+  command_completed = ARGV.delete('--detect-incomplete').nil?
+
+  ARGF.each_line do |line|
+    begin
+      colorize_line, line_type = classify_line(line)
+
+      if line_type == :error
+        status += 1
+      end
+
+      # There may be cases where none of the ERROR_PATTERNS match but we still
+      # failed.  E.g. Fatal at end of line due to stdout from DPI.  Use the final
+      # error count as a safety catch.
+      if md = line.match(/# Errors: (\d+), Warnings: \d+$/)
+        error_count = md.captures.first.to_i
+        status = error_count if error_count > 0
+      end
+
+      if color_enabled? && colorize_line
+        line = colorize(COLORS[line_type], line)
+      end
+
+      if command_complete?(line)
+        command_completed = true
+      end
+    rescue ArgumentError => e
+      # Ignore encoding errors when line contains non-UTF-8 characters
+    end
+
+    print line
+  end
+
+  # Fail loudly if command completion was not detected
+  if !command_completed
+    report_failure_to_complete
+    status += 1
+  end
+
+  status
+end
+
+def main
+  main_with_exceptions
+rescue Interrupt
+  exit 130
+end
+
+if __FILE__ == $0
+  exit main
+end

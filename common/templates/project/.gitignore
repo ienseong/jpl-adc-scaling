@@ -1,0 +1,12 @@
+*.swp
+
+.sbox*
+
+**/csr_gen/results
+**/phys/results
+**/verif/results
+**/verif/obj
+*wave*.do
+
+lint/reports
+lint/rule

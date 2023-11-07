@@ -1,0 +1,115 @@
+#!/bin/sh
+
+function usage() {
+    basename $0
+    echo "    -h - Print usage"
+    echo "    --help - Print help"
+    echo "    --register - Print 32-bit hex representation"
+}
+
+function manpage() {
+    egrep '^NAME' -A999 $0
+}
+
+opt_register=0
+
+while test "$1" != ""; do
+    case "$1" in
+        -h)
+            usage
+            exit
+            ;;
+        --help)
+            manpage
+            exit
+            ;;
+        --register)
+            opt_register=1
+            ;;
+        *)
+            echo "ERROR: unknown parameter \"$1\""
+            usage
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+cd $SBOX
+
+sha=$(git rev-parse HEAD | cut -b-7)
+git_diff="git diff --no-ext-diff --quiet --ignore-submodules=untracked"
+num_commits_ahead_of_origin=$(git cherry 2>/dev/null| wc -l)
+unpushed=""
+dirty=""
+
+status_nibble=0
+
+if test "${num_commits_ahead_of_origin}" != "0"; then
+    unpushed="-unpushed"
+    status_nibble=$(expr $status_nibble \| 2)
+    let "status_nibble = $status_nibble | 2"
+fi
+
+if ! ${git_diff}; then
+    dirty="-dirty"
+    let "status_nibble = $status_nibble | 1"
+fi
+
+if ! ${git_diff} --cached; then
+    dirty="-dirty"
+    let "status_nibble = $status_nibble | 1"
+fi
+
+if test "$opt_register" = "1"; then
+    echo "${status_nibble}${sha}"
+else
+    echo "${sha}${unpushed}${dirty}"
+fi
+
+: <<END
+NAME
+
+    sbox-state
+
+SYNOPSIS
+
+    sbox-state [OPTION]
+
+DESCRIPTION
+
+    Returns value representing the sandbox state.
+
+    For a clean sandbox (contains no modified files) it simply returns the
+    sha1 of the HEAD commit.
+
+    For a dirty sandbox (contains modified files) it returns the sha1 of the
+    HEAD commit with a '-dirty' suffix.
+
+    Useful for things like builds and simulation runs.
+
+OPTIONS
+
+    --register
+        Returns a 32-bit hex value representation of the sandbox state
+        suitable for embedding in RTL and making available to software via a
+        register.
+
+        Bits | Name     | Description
+        ---- | ----     | -----------
+        27:0 | Head     | The first 7 characters of the Git SHA1 hash for HEAD.
+        28   | Dirty    | The andbox contains local uncommitted changes.
+        29   | Unpushed | The sandbox contains local unpushed commits.
+
+    -h, --help
+        Print help.
+
+AUTHOR
+
+    Rob Donnelly <robert.donnelly@jpl.nasa.gov>
+
+CREATED
+
+    2016-07-13
+
+END
