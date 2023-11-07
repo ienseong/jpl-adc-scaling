@@ -20,4 +20,5 @@ For details of the module, see the [specification](https://github-fn.jpl.nasa.go
 
 ## Unit Test
 
-For instructions on how to run the unit test, see the [README](https://github-fn.jpl.nasa.gov/jpl-fpga-ip-incubator/jpl-adc-scaling/blob/main/verif/README.md).
+For instructions on how to run the unit test, see the [README](https://github-fn.jpl.nasa.gov/jpl-fpga-ip-incubator-fn/jpl_adc-scaling/blob/master/verif/README.md).
+
