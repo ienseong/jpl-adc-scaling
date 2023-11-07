@@ -1,0 +1,59 @@
+# //  Questa Sim-64
+# //  Version 2020.4_2 linux_x86_64 Dec  5 2020
+# //
+# //  Copyright 1991-2020 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Project file /home/rstern/sandbox/mcc-fpga/mcc-fpga/rtl/jpl-adc-scaling/verif/jpl_adc_scaling_project.mpf was not found.
+# Unable to open project.
+do run.do
+# 1
+# Loading project jpl_adc_scaling_project
+# QuestaSim-64 vlog 2020.4_2 Compiler 2020.12 Dec  5 2020
+# Start time: 10:40:24 on Oct 31,2023
+# vlog -reportprogress 300 jpl_adc_scaling_tb.sv "+acc" 
+# -- Compiling module jpl_adc_scaling_tb
+# 
+# Top level modules:
+# 	jpl_adc_scaling_tb
+# End time: 10:40:25 on Oct 31,2023, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# QuestaSim-64 vlog 2020.4_2 Compiler 2020.12 Dec  5 2020
+# Start time: 10:40:25 on Oct 31,2023
+# vlog -reportprogress 300 ../rtl/jpl_adc_scaling.sv "+acc" 
+# -- Compiling module jpl_adc_scaling
+# 
+# Top level modules:
+# 	jpl_adc_scaling
+# End time: 10:40:25 on Oct 31,2023, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim work.jpl_adc_scaling_tb 
+# Start time: 10:40:26 on Oct 31,2023
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Note: (vopt-143) Recognized 1 FSM in module "jpl_adc_scaling(fast)".
+# Loading sv_std.std
+# Loading work.jpl_adc_scaling_tb(fast)
+# Loading work.jpl_adc_scaling(fast)
+# decimal
+# =========== START============
+# 
+# -----------------------------------------------------------------
+# TEST PASSED
+# PASSED: 19270, FAILED: 0
+# 
+# For more details see jpl_adc_scaling_log.txt
+# -----------------------------------------------------------------
+# 
+# ** Note: $stop    : jpl_adc_scaling_tb.sv(125)
+#    Time: 2000020 ns  Iteration: 0  Instance: /jpl_adc_scaling_tb
+# Break in Module jpl_adc_scaling_tb at jpl_adc_scaling_tb.sv line 125
+# End time: 10:41:31 on Oct 31,2023, Elapsed time: 0:01:05
+# Errors: 0, Warnings: 5
