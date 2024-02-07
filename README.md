@@ -1,7 +1,8 @@
 # jpl-adc-scaling
 
 ## Overview
-<img src="https://github-fn.jpl.nasa.gov/storage/user/1098/files/73b69370-3a1c-4e05-a0c9-d4dc3a0a0865"  width="400" height="300"/>
+<img src="https://github.com/ienseong/jpl-adc-scaling/assets/38596672/3c06f2c6-8c07-459d-b0ca-767a3ffb348c"  width="400" height="300"/>
+
 This module processes the output from an ADC: running a calibration sequence to determine an offset, subtracting out the offset from subsequent values, and scaling the result according to the following equations:
 
 `o_result = ((i_adc_raw - offset) * i_scale_val) / (2^D)`
